@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" id="themeMode" class="light">
+<!-- header -->
+<%- include('../shared/header.ejs', {title: __('user_game_transaction.slot.page_title') }) -%>
+
+<body class="app">
+  <!-- preloader -->
+  <%- include('../shared/preloader.ejs') -%>
+
+  <!-- mobile menu -->
+  <%- include('../shared/mobile.ejs') -%>
+
+  <div class="flex">
+    <!-- sidebar -->
+    <%- include('../shared/sidebar.ejs') -%>
+
+    <div class="content">
+      <!-- topbar -->
+      <%- include('../shared/topbar.ejs') -%>
+
+      <!-- main content here -->
+      <div class="grid grid-cols-12 gap-6">
+        <div class="col-span-12 xxl:col-span-12 grid grid-cols-12 gap-6">
+          <div class="col-span-12 mt-2">
+            <div class="intro-y flex items-center h-10">
+              <h2 class="text-lg font-medium truncate mr-5"><%= __('user_game_transaction.slot.title') %></h2>
+              <a href="" class="ml-auto flex text-theme-1 dark:text-theme-10">
+                <i data-feather="refresh-ccw" class="w-4 h-4 mr-3"></i> <%= __('common.reload') %>
+              </a>
+            </div>
+
+            <div class="col-span-12 intro-y box mt-2 p-5">
+              <div id="card-loading" style="display: none;">
+                <div class="center"><i data-loading-icon="ball-triangle" class="w-8 h-8"></i></div>
+              </div>
+              <div class="card border-primary">
+                <div class="card-body">
+                  <div class="card-header flex flex-wrap justify-between items-center">
+                    <div class="flex flex-wrap gap-3 items-center">
+                      <div class="w-full sm:w-auto relative sm:mt-0 pulsate">
+                        <select onchange="onChangeAgentSelect()" class="w-full min-width border" id="transaction-agent-select"></select>
+                      </div>
+                      <div class="w-full sm:w-auto relative sm:mt-0">
+                        <select onchange="drawTable()" class="w-full min-width border" id="transaction-user-select"></select>
+                      </div>
+                      <div class="w-full sm:w-auto relative sm:mt-0">
+                        <select class="w-full input min-width border theme3-btn2" id="providerCode"></select>
+                      </div>
+                      <div class="w-full sm:w-auto relative sm:mt-0">
+                        <select class="w-full input min-width border theme3-btn2" id="gameCode" style="display:none">
+                        </select>
+                      </div>
+                      <div class="w-full sm:w-auto relative mr-auto sm:mt-0">
+                        <select class="input w-full border theme3-btn2" id="search_period">
+                          <option value="0">Select Period</option>
+                          <option value="1">Today</option>
+                          <option value="2">Yesterday</option>
+                          <option value="3">2 Days Ago</option>
+                          <option value="4">3 Days Ago</option>
+                          <option value="5">4 Days Ago</option>
+                          <option value="6">5 Days Ago</option>
+                          <option value="7">6 Days Ago</option>
+                          <option value="8">7 Days Ago</option>
+                          <option value="9">3 Days</option>
+                          <option value="10">7 Days</option>
+                          <option value="11">15 Days</option>
+                          <option value="12">1 month</option>
+                          <option value="13">3 months</option>
+                        </select>
+                      </div>
+                      <div class="w-full sm:w-auto relative mr-auto sm:mt-0 hidden" id="end_date_div">
+                        <input data-daterange="true" id="user-transaction-period" class="datepicker input w-56 border block mr-2" />
+                      </div>
+                      <div class="w-full sm:w-auto relative sm:mt-0">
+                        <button onclick="drawTable()" class="w-full button flex items-center text-theme-1 justify-center border border-theme-1 text-gray-700 dark:border-theme-10 dark:text-theme-10 theme3-btn1">
+                          <i data-feather="search" class="w-4 h-4 mr-2"></i>
+                          <%= __('user_exchange_history.search') %>
+                        </button>
+                      </div>
+                      <iframe id="textArea" style="display: none"></iframe>
+                    </div>
+                  </div>
+
+                  <div class="w-full border-t border-gray-200 dark:border-dark-5 mt-2"></div>
+
+                  <div class="card-body">
+                    <div class="col-sm-12">
+                      <div class="table-scrollable">
+                        <div class="table-responsive">
+                          <table id="user-transaction-history-datatable" class="table table-striped table-bordered"></table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <%- include('../shared/footer.ejs') -%>
+
+  <!-- global -->
+  <%- include('../shared/global.ejs') -%>
+
+  <script>
+    $("#menu-3").addClass("side-menu--active");
+    $("#menu-3 + ul").addClass("side-menu__sub-open");
+
+    $(document).ready(function() {
+      const elem = document.getElementById("search_period");
+      if (elem != null) {
+        elem.selectedIndex = 1;
+        $("#search_period").change();
+      }
+    });
+
+    let event_type = {
+      debit: `<span class="px-1 rounded inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10">Debit</span>`,
+      credit: `<span class="px-1 rounded inline-block border border-theme-9 text-theme-9 dark:border-theme-9">Credit</span>`,
+      debit_credit: `<span class="px-1 rounded inline-block border border-theme-6 text-theme-6 dark:border-theme-6">Both</span>`,
+    };
+
+    function getStartAndEndDate(type) {
+      let startDate, endDate;
+      switch (type) {
+        case "1":
+          startDate = moment(new Date()).format("YYYY/MM/DD");
+          endDate = moment(new Date()).format("YYYY/MM/DD");
+          break;
+        case "2":
+          startDate = moment(new Date()).subtract(1, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).subtract(1, "days").format("YYYY/MM/DD");
+          break;
+        case "3":
+          startDate = moment(new Date()).subtract(2, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).subtract(2, "days").format("YYYY/MM/DD");
+          break;
+        case "4":
+          startDate = moment(new Date()).subtract(3, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).subtract(3, "days").format("YYYY/MM/DD");
+          break;
+        case "5":
+          startDate = moment(new Date()).subtract(4, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).subtract(4, "days").format("YYYY/MM/DD");
+          break;
+        case "6":
+          startDate = moment(new Date()).subtract(5, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).subtract(5, "days").format("YYYY/MM/DD");
+          break;
+        case "7":
+          startDate = moment(new Date()).subtract(6, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).subtract(6, "days").format("YYYY/MM/DD");
+          break;
+        case "8":
+          startDate = moment(new Date()).subtract(7, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).subtract(7, "days").format("YYYY/MM/DD");
+          break;
+        case "9":
+          startDate = moment(new Date()).subtract(3, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).format("YYYY/MM/DD");
+          break;
+        case "10":
+          startDate = moment(new Date()).subtract(7, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).format("YYYY/MM/DD");
+          break;
+        case "11":
+          startDate = moment(new Date()).subtract(15, "days").format("YYYY/MM/DD");
+          endDate = moment(new Date()).format("YYYY/MM/DD");
+          break;
+        case "12":
+          startDate = moment(new Date()).subtract(1, "months").format("YYYY/MM/DD");
+          endDate = moment(new Date()).format("YYYY/MM/DD");
+          break;
+        case "13":
+          startDate = moment(new Date()).subtract(3, "months").format("YYYY/MM/DD");
+          endDate = moment(new Date()).format("YYYY/MM/DD");
+          break;
+      }
+
+      const initialDate = `${startDate} - ${endDate}`;
+      return initialDate;
+    }
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    const startDate = moment(new Date(year, month, 1)).format("YYYY/MM/DD");
+    const endDate = moment(new Date(year, month + 1, 0)).format("YYYY/MM/DD");
+    const initialDate = `${startDate} - ${endDate}`;
+
+    $("#user-transaction-period").val(initialDate);
+
+    let sessionAuthId = `<%= session.auth.uuid %>`;
+    let userGameHistoryTable;
+
+    function getAgentsFunc() {
+      $.ajax({
+        type: "POST",
+        url: `/api/agent/${sessionAuthId}/child`,
+        data: {},
+        dataType: "json",
+        success: function(res) {
+          if (res.status == 1) {
+            let data = det(res.child);
+            let optionStr = `<option value='all'><%= __('user_game_transaction.all_agent') %></option>`;
+            for (let i = 0; i < data.length; i++) {
+              optionStr += `<option value='${data[i].agentCode}'>${data[i].agentCode}</option>`;
+            }
+            $("#transaction-agent-select").html(optionStr);
+            tail.select("#transaction-agent-select", {
+              search: true,
+              width: 160,
+              locale: "<%= session.locale %>"
+            });
+            onChangeAgentSelect();
+          }
+        },
+      });
+    }
+
+    function onChangeAgentSelect() {
+      let selectedAgentCode = $("#transaction-agent-select").val();
+      let ajaxURL = "";
+      if (selectedAgentCode == "all") {
+        ajaxURL = `/api/user/all/list`;
+      } else {
+        ajaxURL = `/api/user/${selectedAgentCode}/agent`;
+      }
+
+      $.ajax({
+        type: "POST",
+        url: ajaxURL,
+        data: {},
+        dataType: "json",
+        success: function(res) {
+          if (res.status == 1) {
+            var optionStr = "<option value='all'><%= __('user_game_transaction.all_user') %></option>";
+            tail.select("#transaction-user-select").remove();
+            var data = res.data;
+            for (var i = 0; i < data.length; i++) {
+              optionStr += `<option value='${data[i].userCode}'>${data[i].userCode}</option>`;
+            }
+            $("#transaction-user-select").html(optionStr);
+            tail.select("#transaction-user-select", {
+              search: true,
+              width: 150,
+              locale: "<%= session.locale %>"
+            });
+            drawTable();
+          }
+        },
+      });
+    }
+
+    $("#search_period").change(function(e) {
+      const v = $("#search_period").val();
+      if (v == "0") {
+        $("#search_period").val('1');
+      }
+      const dates = getStartAndEndDate(v);
+      $("#user-transaction-period").val(dates);
+    });
+
+    function drawTable() {
+      if (userGameHistoryTable) {
+        $('#card-loading').show();
+        userGameHistoryTable.ajax.reload();
+      } else {
+        userGameHistoryTable = $("#user-transaction-history-datatable").DataTable({
+          ...dataTableGlobalConfig,
+          order: [
+            [0, "desc"]
+          ],
+          columns: [{
+              title: `<%= __('user_game_transaction.table.createdAt') %>`,
+              data: "createdAt",
+              width: "160px"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.agent_code') %>`,
+              data: "agentCode"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.user_code') %>`,
+              data: "userCode"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.provider_code') %>`,
+              data: "providerCode"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.game_code') %>`,
+              data: "gameCode"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.type') %>`,
+              data: "type"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.bet') %>`,
+              data: "bet"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.win') %>`,
+              data: "win"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.txnType') %>`,
+              data: "txnType"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.user_start_balance') %>`,
+              data: "userStartBalance"
+            },
+            {
+              title: `<%= __('user_game_transaction.table.user_end_balance') %>`,
+              data: "userEndBalance"
+            },
+            // { title: `<%= __('user_game_transaction.table.agent_start_balance') %>`, data: "agentStartBalance" },
+            // { title: `<%= __('user_game_transaction.table.agent_end_balance') %>`, data: "agentEndBalance" },
+          ],
+          ajax: {
+            url: `/api/game_transaction`,
+            type: "POST",
+            data: function(data) {
+              data.gameType = "slot";
+              data.agentCode = $("#transaction-agent-select").val();
+              data.userCode = $("#transaction-user-select").val();
+              data.startDate = $("#user-transaction-period").val().split(" - ")[0];
+              data.endDate = $("#user-transaction-period").val().split(" - ")[1];
+
+              data.search = data.search.value;
+              data.dir = data.order[0].dir;
+              data.order = data.columns[data.order[0].column].data;
+              delete data.columns;
+            },
+            dataSrc: function(res) {
+              if (res.data) {
+                res.recordsFiltered = res.count;
+                res.recordsTotal = res.count;
+                for (let i = 0; i < res.data.length; i++) {
+                  res.data[i].createdAt = convertDate(res.data[i].createdAt);
+                  res.data[i].agentCode = convertString(res.data[i].agentCode, 30);
+                  res.data[i].userCode = convertString(res.data[i].userCode, 30);
+                  res.data[i].providerCode = convertString(res.data[i].providerCode, 30);
+                  res.data[i].gameCode = convertString(res.data[i].gameCode, 30);
+                  res.data[i].type =
+                    res.data[i].type == "BASE" ? [`<p class="text-theme-1">${res.data[i].type}</p>`] : [`<p class="text-theme-6">${res.data[i].type}</p>`];
+                  res.data[i].bet = `${res.data[i].bet.toLocaleString()}`;
+                  res.data[i].win = `${res.data[i].win.toLocaleString()}`;
+                  res.data[i].txnType = event_type[res.data[i].txnType];
+                  res.data[i].userStartBalance = `${res.data[i].userStartBalance.toLocaleString()}`;
+                  res.data[i].userEndBalance = `${res.data[i].userEndBalance.toLocaleString()}`;
+                  // res.data[i].agentStartBalance = `${res.data[i].agentStartBalance.toLocaleString()}`;
+                  // res.data[i].agentEndBalance = `${res.data[i].agentEndBalance.toLocaleString()}`;
+                }
+
+                $("#user-transaction-history-count").html(`(${res.count})`);
+                $('#card-loading').fadeOut();
+                return res.data;
+              }
+            },
+          },
+        });
+      }
+    }
+
+    getAgentsFunc();
+  </script>
+</body>
+
+</html>

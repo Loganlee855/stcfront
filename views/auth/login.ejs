@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+  <link rel="stylesheet" media="screen" href="/assets/login/js/particles/demo/css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="/assets/plugins/toastr/css/toastr.min.css" />
+  <style>
+    #particles-js {
+      background-color: #282a36 !important;
+    }
+  </style>
+
+</head>
+
+<body>
+  <section class="home show" id="particles-js">
+    <div class="form_container">
+      <div class="form login_form">
+        <form id="login-form">
+         <input type="hidden" id="agentName" />
+          <h2>Login</h2>
+          <div class="input_box">
+            <input type="text" placeholder="Agent Code" id="agent_code" />
+            <i class="uil uil-user email"></i>
+          </div>
+          <div class="input_box">
+            <input type="password" placeholder="Password" id="password" />
+            <i class="uil uil-lock password"></i>
+          </div>
+          <button type="submit" class="button" id="btn-login">Login</button>
+          <div class="login_signup">Don't have an account? <a href="register" data-href="#" id="ipText">Signup</a></div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <script src="/assets/login/js/particles/particles.js"></script>
+  <script src="/assets/login/js/particles/demo/js/app.js"></script>
+  <script src="/assets/plugins/toastr/js/toastr.min.js"></script>
+  <script src="/assets/js/app.js"></script>
+  <script src="/assets/js/common.js"></script>
+  <script src="/assets/js/auth.js"></script>
+</body>
+
+</html>

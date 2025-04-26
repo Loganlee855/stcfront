@@ -1,0 +1,140 @@
+<nav class="side-nav">
+    <a href="/" class="intro-x flex items-center pl-5 pt-4 theme3-padding-0">
+        <img class="w-12" src="<%= settings.logo %>" draggable="false" />
+        <span class="hidden xl:block text-white pageLogo text-lg ml-3"> <%= settings.title %> </span>
+    </a>
+    <div class="side-nav__devider my-6"></div>
+    <ul>
+        <% if (session.auth.role != 100) { %>
+        <li>
+            <a href="/dashboard" class="side-menu" id="menu-1">
+                <div class="side-menu__icon"></div>
+                <div class="side-menu__title"><%= __('sidebar.dashboard') %></div>
+            </a>
+        </li>
+        <% } %>
+        <li>
+            <a href="javascript:;" class="side-menu" id="menu-2">
+                <div class="side-menu__icon"></div>
+                <div class="side-menu__title">
+                    <%= __('sidebar.agent') %>
+                    <i data-feather="chevron-down" class="side-menu__sub-icon"></i>
+                </div>
+            </a>
+            <ul>
+                <% if (session.auth.agentType == 3) { %>
+                <li>
+                    <a href="/agent/manage" class="side-menu">
+                        <div class="side-menu__icon"></div>
+                        <div class="side-menu__title"><%= __('sidebar.agent_manage') %></div>
+                    </a>
+                </li>
+                <% } %>
+                <% if (session.auth.role != 100) { %>
+                <li>
+                    <a href="/agent/exchange_history" class="side-menu">
+                        <div class="side-menu__icon"></div>
+                        <div class="side-menu__title"><%= __('sidebar.agent_exchange_history') %></div>
+                    </a>
+                </li>
+                <li>
+                    <a href="/agent/balance_history" class="side-menu">
+                        <div class="side-menu__icon"></div>
+                        <div class="side-menu__title"><%= __('sidebar.agent_balance_history') %></div>
+                    </a>
+                </li>
+                <% } %>
+                <% if (session.auth.role == 1) { %>
+                    <li>
+                        <a href="/agent/action_history" class="side-menu">
+                            <div class="side-menu__icon"></div>
+                            <div class="side-menu__title">Agent Activity History</div>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </li>
+        <% if (session.auth.role != 100) { %>
+        <li>
+            <a href="javascript:;" class="side-menu" id="menu-3">
+                <div class="side-menu__icon"></div>
+                <div class="side-menu__title">
+                    <%= __('sidebar.user') %>
+                    <i data-feather="chevron-down" class="side-menu__sub-icon"></i>
+                </div>
+            </a>
+            <ul>
+                <li>
+                    <a href="/user/manage" class="side-menu">
+                        <div class="side-menu__icon"></div>
+                        <div class="side-menu__title"><%= __('sidebar.user_manage') %></div>
+                    </a>
+                </li>
+                <li>
+                    <a href="/user/exchange_history" class="side-menu">
+                        <div class="side-menu__icon"></div>
+                        <div class="side-menu__title"><%= __('sidebar.user_exchange_history') %></div>
+                    </a>
+                </li>
+                <li>
+                    <a href="/user/balance_history" class="side-menu">
+                        <div class="side-menu__icon"></div>
+                        <div class="side-menu__title"><%= __('sidebar.user_balance_history') %></div>
+                    </a>
+                </li>
+                <li>
+                    <a href="/user/game_transaction" class="side-menu">
+                        <div class="side-menu__icon"></div>
+                        <div class="side-menu__title"><%= __('sidebar.user_transaction_history') %></div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="javascript:;" class="side-menu" id="menu-15">
+                <div class="side-menu__icon"></div>
+                <div class="side-menu__title">
+                    Providers
+                    <i data-feather="chevron-down" class="side-menu__sub-icon"></i>
+                </div>
+            </a>
+            <ul>
+                <li>
+                    <a href="/provider" class="side-menu">
+                        <div class="side-menu__icon"></div>
+                        <div class="side-menu__title"><%= __('sidebar.provider') %></div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <% if (session.auth.agentType == 3) { %>
+        <li>
+            <a href="/message" class="side-menu" id="menu-6">
+                <div class="side-menu__icon"></div>
+                <div class="side-menu__title"><%= __('sidebar.message') %></div>
+            </a>
+        </li>
+        <% } %>
+        <% if(session.auth.role == 1) { %>
+        <li>
+            <a href="/checkup" class="side-menu" id="menu-7">
+                <div class="side-menu__icon"></div>
+                <div class="side-menu__title"><%= __('sidebar.checkup') %></div>
+            </a>
+        </li>
+        <li>
+            <a href="/popup" class="side-menu" id="menu-8">
+                <div class="side-menu__icon"></div>
+                <div class="side-menu__title"><%= __('sidebar.popup') %></div>
+            </a>
+        </li>
+        <% } %>
+        <li>
+            <a href="/docs" class="side-menu" id="menu-9">
+                <div class="side-menu__icon"></div>
+                <div class="side-menu__title"><%= __('sidebar.api_docs') %></div>
+            </a>
+        </li>
+        <% } %>
+    </ul>
+</nav>

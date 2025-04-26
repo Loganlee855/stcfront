@@ -1,0 +1,100 @@
+<div class="top-bar">
+    <div class="-intro-x breadcrumb mr-auto hidden sm:flex">
+        <div class="mr-4">
+            <div class="font-semibold"><%= __('topbar.agent_balance') %></div>
+            <div class="text-xs mt-1">
+                <span id="agent_balance_currency" class="text-theme-1"></span><span id="agent_balance">0</span>
+            </div>
+        </div>
+        <div class="mr-4">
+            <div class="font-semibold"><%= __('topbar.api_type') %></div>
+            <div class="text-xs mt-1">
+                <span id="agent_api_type" class="text-theme-9">Transfer</span>
+            </div>
+        </div>
+        <div class="mr-4">
+            <div class="font-semibold"><%= __('topbar.agent_type') %></div>
+            <div class="text-xs mt-1">
+                <% if (session.auth.agentType != 3) { %>
+                    <span id="agent_api_type" class="text-theme-9">Affiliate</span>
+                <% } else { %>
+                    <span id="agent_api_type" class="text-theme-1">Operator</span>
+                <% } %>
+            </div>
+        </div>
+        <div class="mr-4">
+            <div class="font-semibold"><%= __('topbar.agent_ggr') %></div>
+            <div class="text-xs mt-1">
+                <span id="agent_api_type"><%= session.auth.percent %>%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="intro-x dropdown mr-auto sm:mr-6">
+        <div class="dropdown">
+            <div class="dropdown-toggle notification--bullet cursor-pointer"><%= session.locale == 'en' ? 'English' : '한국어' %></div>
+            <div class="dropdown-box w-40">
+                <div class="dropdown-box__content box dark:bg-dark-1 p-2">
+                    <a
+                        href="/api/agent/i18n/en"
+                        class="flex items-center block p-2 transition duration-300 ease-in-out bg-white dark:bg-dark-1 hover:bg-gray-200 dark:hover:bg-dark-2 rounded-md"
+                    >
+                        English
+                    </a>
+                    <a
+                        href="/api/agent/i18n/ko"
+                        class="flex items-center block p-2 transition duration-300 ease-in-out bg-white dark:bg-dark-1 hover:bg-gray-200 dark:hover:bg-dark-2 rounded-md"
+                    >
+                        한국어
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="intro-x dropdown mr-auto sm:mr-6">
+        <div class="dropdown-toggle notification--bullet cursor-pointer" id="new-message-alarm">
+            <i data-feather="bell" class="notification__icon dark:text-gray-300"></i>
+        </div>
+        <div class="notification-content pt-2 dropdown-box">
+            <div class="notification-content__box dropdown-box__content box dark:bg-dark-6">
+                <div class="notification-content__title text-theme-5"><%= __('topbar.message') %></div>
+                <div id="new-message-content">
+                    <span class="text-theme-1"><%= __('topbar.no_message') %></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-2 border-theme-40">
+        <div class="font-medium"><%= session.auth.agentCode %></div>
+    </div>
+
+    <div class="intro-x dropdown w-8 h-8">
+        <div class="dropdown-toggle w-8 h-8 rounded-full overflow-hidden shadow-lg image-fit zoom-in">
+            <img class="rounded-full bg-theme-1" src="/assets/images/avatar.jpg" draggable="false" />
+        </div>
+        <div class="dropdown-box w-56">
+            <div class="dropdown-box__content box dark:bg-dark-6 text-grey">
+                <div class="p-2">
+                    <a
+                        href="/profile"
+                        class="flex items-center block p-2 transition duration-300 ease-in-out hover:bg-theme-3 text-theme-5 dark:hover:bg-dark-1 rounded-md"
+                    >
+                        <i data-feather="user" class="w-4 h-4 mr-2"></i> <%= __('topbar.profile') %>
+                    </a>
+                </div>
+                <div class="p-2 border-t border-theme-2 dark:border-dark-3">
+                    <a
+                        href="#"
+                        id="logout-button"
+                        class="flex items-center block p-2 transition duration-300 ease-in-out hover:bg-theme-3 text-theme-5 dark:hover:bg-dark-3 rounded-md"
+                        onclick="handleLogout()"
+                    >
+                        <i data-feather="power" class="w-4 h-4 mr-2"></i> <%= __('topbar.logout') %>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

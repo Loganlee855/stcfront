@@ -1,0 +1,201 @@
+$("#menu-2").addClass("side-menu--active");
+$("#menu-2 + ul").addClass("side-menu__sub-open");
+
+const today = new Date();
+const year = today.getFullYear();
+const month = today.getMonth();
+
+const startDate = moment(new Date(year, month, 1)).format("YYYY/MM/DD");
+const endDate = moment(new Date(year, month + 1, 0)).format("YYYY/MM/DD");
+const initialDate = `${startDate} - ${endDate}`;
+
+const actionTypeHtml = {
+  "Login": `<span class="px-1 rounded inline-block border border-theme-9 text-theme-5 dark:border-theme-10 dark:text-theme-">Login</span>`,
+  "Create Agent": `<span class="px-1 rounded inline-block border border-theme-9 text-theme-25 dark:border-theme-6 ">Create Agent</span>`,
+  "Update Agent": `<span class="px-1 rounded inline-block border border-theme-1 text-theme-25 dark:border-theme-6 ">Update Agent</span>`,
+  "Delete Agent": `<span class="px-1 rounded inline-block border border-theme-11 text-theme-11 dark:border-theme-6 ">Delete Agent</span>`,
+  "Suspend Agent": `<span class="px-1 rounded inline-block border border-theme-11 text-theme-25 dark:border-theme-6 ">Suspend Agent</span>`,
+  "Exchange": `<span class="px-1 rounded inline-block border border-theme-25 text-theme-25 dark:border-theme-6 ">Transaction</span>`,
+};
+
+$("#agent-money-balance-period").val(initialDate);
+
+let sessionAuthId = `<%= session.auth.uuid %>`;
+let agentBalanceHistoryTable;
+
+function getAgentsFunc() {
+  $.ajax({
+    type: "POST",
+    url: `/api/agent/${sessionAuthId}/child`,
+    data: {},
+    dataType: "json",
+    success: function(res) {
+      if (res.status == 1) {
+        let optionStr = "";
+        const data = det(res.child);
+
+        optionStr += "<option value='all'><%= __('agent_balance_history.all_agent') %></option>";
+
+        for (let i = 0; i < data.length; i++) {
+          optionStr += `<option value='${data[i].agentCode}'>${data[i].agentCode}</option>`;
+        }
+
+        $("#agent-balance-history-select").html(optionStr);
+        tail.select("#agent-balance-history-select", {
+          search: true,
+          width: 160,
+          locale: "<%= session.locale %>"
+        });
+        showToast;
+        drawTable();
+      }
+    },
+  });
+}
+
+
+function openMap(ipAddr) {
+  $('#card-loading').show();
+  $.ajax({
+    type: "POST",
+    url: `/api/agent_activity_history/${ipAddr}`,
+    data: {},
+    dataType: "json",
+    success: function(res) {
+      if (res.status == 1) {
+        window.open(res.mapUrl, "googleMapsWindow", "width=800,height=800,scrollbars=yes");
+      }
+      $("#card-loading").fadeOut();
+    },
+  });
+}
+
+function drawTable() {
+  $('#card-loading').show();
+  if (agentBalanceHistoryTable) {
+    agentBalanceHistoryTable.ajax.reload();
+  } else {
+    agentBalanceHistoryTable = $("#agent-balance-history-datatable").DataTable({
+      ...dataTableGlobalConfig,
+      order: [
+        [12, "desc"]
+      ],
+      columns: [{
+          title: "<%= __('agent_balance_history.table.no') %>",
+          data: "no",
+          width: "60px",
+          orderable: false
+        },
+        {
+          title: "Agent Code",
+          data: "agentCode",
+          orderable: false
+        },
+        {
+          title: "Action",
+          data: "action",
+          orderable: false
+        },
+        {
+          title: "ipAddress",
+          data: "ip",
+          orderable: false,
+          render: function(data, type, row) {
+            return `<button onclick="openMap('${data}')" class="px-1 rounded inline-block border border-theme-1 text-theme-8 dark:border-theme-6">${data}</button>`;
+          }
+        },
+        {
+          title: "Comment",
+          data: "description",
+          orderable: false
+        },
+        {
+          title: "Continent",
+          data: "continent",
+          orderable: false
+        },
+        {
+          title: "Country",
+          data: "country",
+          orderable: false
+        },
+        {
+          title: "Region",
+          data: "regionName",
+          orderable: false
+        },
+        {
+          title: "City",
+          data: "city",
+          orderable: false
+        },
+        {
+          title: "Zip",
+          data: "zip",
+          orderable: false
+        },
+        {
+          title: "Time Zone",
+          data: "timezone",
+          orderable: false
+        },
+        {
+          title: "Isp",
+          data: "isp",
+          orderable: false
+        },
+        {
+          title: "Date",
+          data: "createdAt",
+          orderable: false
+        },
+      ],
+      beforeSend: function() {
+        $("#card-loading").show();
+      },
+      complete: function() {
+        $("#card-loading").fadeOut();
+      },
+      ajax: {
+        url: "/api/agent_activity_history",
+        type: "POST",
+        data: function(data) {
+          data.agentCode = $("#agent-balance-history-select").val();
+          data.action = $("#agent-action-type-select").val();
+          data.startDate = $("#agent-money-balance-period").val().split(" - ")[0];
+          data.endDate = $("#agent-money-balance-period").val().split(" - ")[1];
+
+          data.search = data.search.value;
+          data.dir = data.order[0].dir;
+          data.order = data.columns[data.order[0].column].data;
+          delete data.columns;
+        },
+        dataSrc: function(res) {
+          if (res.status == 1) {
+            for (let i = 0; i < res.data.length; i++) {
+              res.data[i].no = Number(i + 1) + Number(res.start);
+              res.data[i].agentCode = convertString(res.data[i].agentCode, 30);
+              res.data[i].action = actionTypeHtml[res.data[i].action];
+              res.data[i].ip = convertString(res.data[i].ip);
+              res.data[i].description = convertString(res.data[i].description);
+              res.data[i].continent = convertString(res.data[i].continent);
+              res.data[i].country = convertString(res.data[i].country);
+              res.data[i].regionName = convertString(res.data[i].regionName);
+              res.data[i].city = convertString(res.data[i].city);
+              res.data[i].zip = convertString(res.data[i].zip);
+              res.data[i].timezone = convertString(res.data[i].timezone);
+              res.data[i].isp = convertString(res.data[i].isp);
+              res.data[i].isp = convertString(res.data[i].isp);
+              res.data[i].createdAt = convertDate(res.data[i].createdAt);
+            }
+            $("#agent-balance-history-count").html(`(${res.recordsTotal})`);
+            $('#card-loading').fadeOut();
+          }
+          return res.data;
+        },
+      },
+    });
+  }
+}
+
+getAgentsFunc();
