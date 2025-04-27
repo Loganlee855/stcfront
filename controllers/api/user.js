@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { User, Agent, UserTransaction, UserBalanceProgress, AgentBalanceProgress } = require("../../models");
 const logger = require("../../utils/logger");
 const { ERR_MSG } = require("../../utils/constants");
+const { sendError } = require("../../utils/telegram");
 
 exports.getAllUsersForDT = async (req, res) => {
     try {
@@ -43,7 +44,7 @@ exports.getAllUsersForDT = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | User | Get All", `${error.message}`, req);
-
+        sendError(error, "API | User | Get All",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -65,7 +66,7 @@ exports.getAllUsers = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | User | Get All List", `${error.message}`, req);
-
+        sendError(error, "API | User | Get All List",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -88,7 +89,7 @@ exports.getUsersByAgent = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | User | Get By Agent", `${error.message}`, req);
-
+        sendError(error, "API | User | Get By Agent",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -106,7 +107,7 @@ exports.updateAgentUser = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | User | Update", `${error.message}`, req);
-
+        sendError(error, "API | User | Update",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -130,7 +131,7 @@ exports.getUserById = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | User | Get By ID", `${error.message}`, req);
-
+        sendError(error, "API | User | Get By ID",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -151,7 +152,7 @@ exports.changeRtp = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | User | Change Rtp", `${error.message}`, req);
-
+        sendError(error, "API | User | Change Rtp",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -245,7 +246,7 @@ exports.exchangeUser = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | User | Exchange", `${error.message}`, req);
-
+        sendError(error, "API | User | Exchange",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,

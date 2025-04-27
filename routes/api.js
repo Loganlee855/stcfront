@@ -92,7 +92,9 @@ router.post("/game_transaction", gameTransactionController.getAllGameTransaction
 
 // provider routes
 router.get("/provider", providerController.getAllProviders);
+router.post("/provider/list", providerController.getProviderList);
 router.get("/provider/:provider/gameList/:id", providerController.getAllGames);
+router.post("/provider/:provider/list/games", providerController.getGamesList);
 router.get("/provider/check", providerController.checkProvider);
 router.get("/provider/:id", providerController.getProviderById);
 router.post("/provider/:id/game_list", providerController.getGamesById);

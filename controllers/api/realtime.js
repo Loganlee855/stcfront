@@ -3,6 +3,7 @@ const { Agent, Message } = require("../../models");
 const logger = require("../../utils/logger");
 const { ERR_MSG } = require("../../utils/constants");
 const { dot, det } = require("../../utils/common");
+const { sendError } = require("../../utils/telegram");
 
 exports.getRealTimeInfo = async (req, res) => {
     try {
@@ -42,7 +43,7 @@ exports.getRealTimeInfo = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Message | Get All", `${error.message}`, req);
-
+        sendError(error, "API | Message | Get All",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,

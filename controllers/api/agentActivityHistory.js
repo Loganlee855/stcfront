@@ -3,6 +3,7 @@ const { AgentLoginHistory } = require("../../models");
 const logger = require("../../utils/logger");
 const { ERR_MSG } = require("../../utils/constants");
 const axios = require("axios");
+const { sendError } = require("../../utils/telegram");
 
 exports.getAllActivity = async (req, res) => {
     try {
@@ -50,7 +51,7 @@ exports.getAllActivity = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Agent Activity History | Get All", `${error.message}`, req);
-
+        sendError(error, "API | Agent Activity History | Get All",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -70,7 +71,7 @@ exports.getActivitydetails = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Agent Activity History | Get Details", `${error.message}`, req);
-
+        sendError(error, "API | Agent Activity History | Get Details",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,

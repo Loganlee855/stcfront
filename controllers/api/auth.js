@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const { Agent, AgentLoginHistory } = require("../../models");
 const { ERR_MSG } = require("../../utils/constants");
 const logger = require("../../utils/logger");
+const { sendError } = require("../../utils/telegram");
 
 exports.login = async (req, res) => {
     try {
@@ -101,7 +102,7 @@ exports.login = async (req, res) => {
         }
     } catch (error) {
         logger("error", "API | Auth | Login", `${error.message}`, req);
-
+        sendError(error, "API | Auth | Login",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -116,7 +117,7 @@ exports.logout = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Auth | Logout", `${error.message}`, req);
-
+        sendError(error, "API | Auth | Logout",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,

@@ -43,11 +43,11 @@
                       <div class="w-full sm:w-auto relative sm:mt-0">
                         <select onchange="drawTable()" class="w-full min-width border" id="transaction-user-select"></select>
                       </div>
-                      <div class="w-full sm:w-auto relative sm:mt-0">
-                        <select class="w-full input min-width border theme3-btn2" id="providerCode"></select>
+                      <div class="w-full sm:w-auto relative sm:mt-0 pulsate">
+                        <select class="input w-full border theme3-btn2" id="providerCode"></select>
                       </div>
                       <div class="w-full sm:w-auto relative sm:mt-0">
-                        <select class="w-full input min-width border theme3-btn2" id="gameCode" style="display:none">
+                        <select onchange="drawTable()" class="w-full input min-width border theme3-btn2" id="gameCode" style="display:none">
                         </select>
                       </div>
                       <div class="w-full sm:w-auto relative mr-auto sm:mt-0">
@@ -120,9 +120,18 @@
     });
 
     let event_type = {
-      debit: `<span class="px-1 rounded inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10">Debit</span>`,
-      credit: `<span class="px-1 rounded inline-block border border-theme-9 text-theme-9 dark:border-theme-9">Credit</span>`,
-      debit_credit: `<span class="px-1 rounded inline-block border border-theme-6 text-theme-6 dark:border-theme-6">Both</span>`,
+      BET: `<span class="type-label px-1 rounded inline-block border border-theme-6 text-theme-5 dark:border-theme-10 dark:text-theme-10 float-left">BET</span>`,
+      SETTLED: `<span class="type-label px-1 rounded inline-block border border-theme-9 text-theme-2 dark:border-theme-9 float-right">WIN</span>`,
+      CANCEL: `<span class="type-label px-1 rounded inline-block border border-theme-12 text-theme-12 dark:border-theme-10 dark:text-theme-10" style="text-align:center">CANCEL</span>`,
+      FREEBET: `<span class="type-label px-1 rounded inline-block border border-theme-27 text-theme-27 dark:border-theme-10 dark:text-theme-10" style="text-align:center">FREEBET</span>`,
+      ROLLBACK: `<span class="type-label px-1 rounded inline-block border border-theme-12 text-theme-12 dark:border-theme-10 dark:text-theme-10" style="text-align:center">ROLLBACK</span>`,
+      ADJUSTMENT: `<span class="type-label px-1 rounded inline-block border border-theme-12 text-theme-12 dark:border-theme-10 dark:text-theme-10" style="text-align:center">ADJUSTMENT</span>`,
+      JACKPOT: `<span class="type-label px-1 rounded inline-block border border-theme-27 text-theme-27 dark:border-theme-10 dark:text-theme-10" style="text-align:center">JACKPOT</span>`,
+      BONUS: `<span class="type-label px-1 rounded inline-block border border-theme-27 text-theme-27 dark:border-theme-10 dark:text-theme-10" style="text-align:center">BONUS</span>`,
+      TIP: `<span class="type-label px-1 rounded inline-block border border-theme-27 text-theme-27 dark:border-theme-10 dark:text-theme-10" style="text-align:center">TIP</span>`,
+      PROMO: `<span class="type-label px-1 rounded inline-block border border-theme-27 text-theme-27 dark:border-theme-10 dark:text-theme-10" style="text-align:center">PROMO</span>`,
+      BET_PRESERVE: `<span class="type-label px-1 rounded inline-block border border-theme-6 text-theme-5 dark:border-theme-10 dark:text-theme-10" style="text-align:center">BET_PRESERVE</span>`,
+      PRESERVE_REFUND: `<span class="type-label px-1 rounded inline-block border border-theme-27 text-theme-27 dark:border-theme-10 dark:text-theme-10" style="text-align:center">REFUND</span>`,
     };
 
     function getStartAndEndDate(type) {
@@ -219,6 +228,7 @@
               locale: "<%= session.locale %>"
             });
             onChangeAgentSelect();
+            getProviders();
           }
         },
       });
@@ -258,6 +268,35 @@
       });
     }
 
+
+    function getProviders() {
+      let ajaxURL = "/api/provider/list";
+      $.ajax({
+        type: "post",
+        url: ajaxURL,
+        success: function(res) {
+          res.data = det(res.result);
+          if (res.status == 1) {
+            let optionStr = `<option value='all'>All Provider</option>`;
+            tail.select("#providerCode").remove();
+            const data = res.data;
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].status == 1) {
+                optionStr += `<option value='${data[i].provider_code}'>${data[i].provider_code}</option>`;
+              } else {
+                optionStr += `<option value='${data[i].provider_code}' disabled>${data[i].provider_code}</option>`;
+              }
+            }
+            $("#providerCode").html(optionStr);
+            tail.select("#providerCode", {
+              search: true,
+              locale: "<%= session.locale %>"
+            });
+          }
+        },
+      });
+    }
+
     $("#search_period").change(function(e) {
       const v = $("#search_period").val();
       if (v == "0") {
@@ -275,63 +314,88 @@
         userGameHistoryTable = $("#user-transaction-history-datatable").DataTable({
           ...dataTableGlobalConfig,
           order: [
-            [0, "desc"]
+            [1, "desc"]
           ],
           columns: [{
-              title: `<%= __('user_game_transaction.table.createdAt') %>`,
-              data: "createdAt",
-              width: "160px"
+              title: "<%= __('agent_balance_history.table.no') %>",
+              data: "no",
+              width: "60px",
+              orderable: false
             },
             {
-              title: `<%= __('user_game_transaction.table.agent_code') %>`,
-              data: "agentCode"
+              title: `Player Account`,
+              data: "userCode",
+              orderable: false
             },
             {
-              title: `<%= __('user_game_transaction.table.user_code') %>`,
-              data: "userCode"
+              title: `Round ID`,
+              data: "wager_code",
+              orderable: false
             },
             {
-              title: `<%= __('user_game_transaction.table.provider_code') %>`,
-              data: "providerCode"
+              title: `Game Account`,
+              data: "member_account",
+              orderable: false
             },
             {
-              title: `<%= __('user_game_transaction.table.game_code') %>`,
-              data: "gameCode"
+              title: `Provider`,
+              data: "provider_id",
+              orderable: false
             },
             {
-              title: `<%= __('user_game_transaction.table.type') %>`,
-              data: "type"
-            },
-            {
-              title: `<%= __('user_game_transaction.table.bet') %>`,
-              data: "bet"
-            },
-            {
-              title: `<%= __('user_game_transaction.table.win') %>`,
-              data: "win"
+              title: `Win / Loss`,
+              data: "amount",
+              orderable: false
             },
             {
               title: `<%= __('user_game_transaction.table.txnType') %>`,
-              data: "txnType"
+              data: "txnType",
+              orderable: false
             },
             {
-              title: `<%= __('user_game_transaction.table.user_start_balance') %>`,
-              data: "userStartBalance"
+              title: `Game Name`,
+              data: "game_name",
+              orderable: false
             },
             {
-              title: `<%= __('user_game_transaction.table.user_end_balance') %>`,
-              data: "userEndBalance"
+              title: `<%= __('user_game_transaction.table.game_code') %>`,
+              data: "gameCode",
+              orderable: false
             },
-            // { title: `<%= __('user_game_transaction.table.agent_start_balance') %>`, data: "agentStartBalance" },
-            // { title: `<%= __('user_game_transaction.table.agent_end_balance') %>`, data: "agentEndBalance" },
+            {
+              title: `Game Type`,
+              data: "game_type",
+              orderable: false
+            },
+            {
+              title: `Currency`,
+              data: "currency",
+              orderable: false
+            },
+            {
+              title: `Transaction Date`,
+              data: "createdAt",
+              width: "160px",
+              orderable: false
+            },
+            {
+              title: "Details",
+              data: "wager_code",
+              orderable: false,
+              render: function(data, type, row) {
+                return `<button onclick="openMap('${data}')" class="px-1 rounded inline-block border border-theme-1 text-theme-2 dark:border-theme-6">Round Details</button>`;
+              }
+            }
           ],
           ajax: {
             url: `/api/game_transaction`,
             type: "POST",
             data: function(data) {
-              data.gameType = "slot";
+              data.gameType = "all";
               data.agentCode = $("#transaction-agent-select").val();
               data.userCode = $("#transaction-user-select").val();
+              data.provider_code = $("#providerCode").val() ? $("#providerCode").val() : "all";
+              data.game_code = $("#gameCode").val() ? $("#gameCode").val() : "all";
               data.startDate = $("#user-transaction-period").val().split(" - ")[0];
               data.endDate = $("#user-transaction-period").val().split(" - ")[1];
 
@@ -345,18 +409,17 @@
                 res.recordsFiltered = res.count;
                 res.recordsTotal = res.count;
                 for (let i = 0; i < res.data.length; i++) {
+                  res.data[i].no = Number(i + 1) + Number(0);
                   res.data[i].createdAt = convertDate(res.data[i].createdAt);
-                  res.data[i].agentCode = convertString(res.data[i].agentCode, 30);
                   res.data[i].userCode = convertString(res.data[i].userCode, 30);
-                  res.data[i].providerCode = convertString(res.data[i].providerCode, 30);
-                  res.data[i].gameCode = convertString(res.data[i].gameCode, 30);
-                  res.data[i].type =
-                    res.data[i].type == "BASE" ? [`<p class="text-theme-1">${res.data[i].type}</p>`] : [`<p class="text-theme-6">${res.data[i].type}</p>`];
-                  res.data[i].bet = `${res.data[i].bet.toLocaleString()}`;
-                  res.data[i].win = `${res.data[i].win.toLocaleString()}`;
-                  res.data[i].txnType = event_type[res.data[i].txnType];
-                  res.data[i].userStartBalance = `${res.data[i].userStartBalance.toLocaleString()}`;
-                  res.data[i].userEndBalance = `${res.data[i].userEndBalance.toLocaleString()}`;
+                  res.data[i].providerCode = convertString(res.data[i].provider_code, 30);
+                  res.data[i].gameCode = convertString(res.data[i].game_code, 30);
+                  let plusMark = res.data[i].action == "BET" ? "0" : `+ ${res.data[i].bet_amount.toLocaleString()}`;
+                  let minMark = res.data[i].action != "BET" ? "0" : `- ${res.data[i].bet_amount.toLocaleString()}`;
+                  res.data[i].amount = `<span class="text-theme-9 float-left">${plusMark}</span><span class="ml-1 px-1 inline-block text-theme-36 float-right">${minMark}</span>`;
+                  res.data[i].txnType = event_type[res.data[i].action];
+                  // res.data[i].userStartBalance = `${res.data[i].before_balance.toLocaleString()}`;
+                  // res.data[i].userEndBalance = `${res.data[i].after_balance.toLocaleString()}`;
                   // res.data[i].agentStartBalance = `${res.data[i].agentStartBalance.toLocaleString()}`;
                   // res.data[i].agentEndBalance = `${res.data[i].agentEndBalance.toLocaleString()}`;
                 }
@@ -370,6 +433,42 @@
         });
       }
     }
+
+    $("#providerCode").change(function() {
+      const pCode = $("#providerCode").val();
+      if (pCode == "all") {
+        $("#gameCode").next().remove();
+        return;
+      }
+      $("#gameCode").css("display", "inline-block");
+      let ajaxURL = `/api/provider/${pCode}/list/games`;
+      $.ajax({
+        type: "post",
+        url: ajaxURL,
+        success: function(res) {
+          res.data = det(res.result);
+          if (res.status == 1) {
+            let optionStr = `<option value='all'>All Games</option>`;
+            tail.select("#gameCode").remove();
+            const data = res.data;
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].status == 1) {
+                optionStr += `<option value='${data[i].game_code}'>${data[i].game_name}</option>`;
+              } else {
+                optionStr += `<option value='${data[i].game_code}' disabled>${data[i].game_name}</option>`;
+              }
+            }
+
+            $("#gameCode").html(optionStr);
+
+            tail.select("#gameCode", {
+              search: true,
+              locale: "<%= session.locale %>"
+            });
+          }
+        },
+      });
+    });
 
     getAgentsFunc();
   </script>

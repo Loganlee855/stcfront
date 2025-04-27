@@ -6,6 +6,7 @@ const isEmpty = require("../../utils/isEmpty");
 const config = require("../../config/main");
 const API_TOKEN = config.CF_API_TOKEN;
 const CLOUDFLARE_API_URL = `${config.CF_API_URL}/firewall/rules`;
+const { sendError } = require("../../utils/telegram");
 
 exports.getFirewallRules = async (req, res) => {
   try {
@@ -21,7 +22,7 @@ exports.getFirewallRules = async (req, res) => {
     });
   } catch (error) {
     logger("error", "API | Cloudflare | Get Firewal rules", `${error.message}`, req);
-
+    sendError(error, "API | Cloudflare | Get Firewal rules",req.originalUrl);
     return res.json({
       status: 0,
       msg: ERR_MSG.INTERNAL_ERROR,
@@ -52,7 +53,7 @@ exports.createWhitelistRule = async (req, res) => {
     });
   } catch (error) {
     logger("error", "API | Cloudflare | Create whitelist", `${error.message}`, req);
-
+    sendError(error, "API | Cloudflare | Create whitelist",req.originalUrl);
     return res.json({
       status: 0,
       msg: ERR_MSG.INTERNAL_ERROR,
@@ -75,7 +76,7 @@ exports.deleteFirewallRule = async (req, res) => {
     });
   } catch (error) {
     logger("error", "API | Cloudflare | Delete whitelist", `${error.message}`, req);
-
+    sendError(error, "API | Cloudflare | Delete whitelist",req.originalUrl);
     return res.json({
       status: 0,
       msg: ERR_MSG.INTERNAL_ERROR,

@@ -8,6 +8,7 @@ const { ERR_MSG } = require("../../utils/constants");
 const isEmpty = require("../../utils/isEmpty");
 const { dot, det } = require("../../utils/common");
 const { randomString } = require("../../utils/randomkey");
+const { sendError } = require("../../utils/telegram");
 
 exports.createAgent = async (req, res) => {
     try {
@@ -63,7 +64,7 @@ exports.createAgent = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Agent | Create Agent", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Create Agent",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -124,7 +125,7 @@ exports.updateAgent = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Agent | Update Agent", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Update Agent",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -162,7 +163,7 @@ exports.updateAgentPasword = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Agent | Update Agent", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Update Agent",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -201,7 +202,7 @@ exports.getAgentById = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Agent | Get Agent By ID", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Get Agent By ID",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -239,7 +240,7 @@ exports.deleteAgent = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Agent | Delete Agent", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Delete Agent",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -332,7 +333,7 @@ exports.exchangeAgent = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Agent | Exchange Agent", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Exchange Agent",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -372,7 +373,7 @@ exports.getParentAgents = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Agent | Get Parent Agents", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Get Parent Agents",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -405,7 +406,7 @@ exports.getChildAgents = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Agent | Get Child Agents", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Get Child Agents",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -430,7 +431,7 @@ exports.checkAgentCode = async (req, res) => {
         }
     } catch (error) {
         logger("error", "API | Agent | Check Agent Code", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Check Agent Code",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -447,7 +448,7 @@ exports.updateProfile = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Agent | Update Profile", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Update Profile",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -510,7 +511,7 @@ exports.getAgentsByTree = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Agent | Get Agents By Tree", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Get Agents By Tree",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -618,7 +619,7 @@ exports.getCurrencies = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Agent | Get Currencies", `${error.message}`, req);
-
+        sendError(error, "API | Agent | Get Currencies",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,

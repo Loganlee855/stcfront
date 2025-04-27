@@ -8,6 +8,7 @@ const axios = require("axios");
 const MD5 = require("md5.js");
 const qs = require('qs');
 const config = require("../../config/main");
+const { sendError } = require("../../utils/telegram");
 
 exports.createProvider = async (req, res) => {
     try {
@@ -23,7 +24,7 @@ exports.createProvider = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Provider | Create", `${error.message}`, req);
-
+        sendError(error, "API | Provider | Create",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -54,7 +55,7 @@ exports.updateProvider = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Provider | Update", `${error.message}`, req);
-
+        sendError(error, "API | AuthProvider | Update",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -82,7 +83,7 @@ exports.setStatusProvider = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Provider | Set Status", `${error.message}`, req);
-
+        sendError(error, "API | Provider | Set Status",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -97,7 +98,7 @@ exports.deleteProvider = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Provider | Delete", `${error.message}`, req);
-
+        sendError(error, "API | Provider | Delete",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -122,7 +123,7 @@ exports.getProviderById = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Provider | Get By ID", `${error.message}`, req);
-
+        sendError(error, "API | Provider | Get By ID",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -155,7 +156,63 @@ exports.getAllProviders = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Provider | Get All", `${error.message}`, req);
+        sendError(error, "API | Provider | Get All",req.originalUrl);
+        return res.json({
+            status: 0,
+            msg: ERR_MSG.INTERNAL_ERROR,
+        });
+    }
+};
 
+exports.getProviderList = async (req, res) => {
+    try {
+        const data = await ProviderList.findAll({
+          attributes: ["provider", "provider_code","game_type", "status"],
+          order: [
+            ["game_type_c", "ASC"],
+            ["status", "DESC"],
+          ],
+        });
+
+        const encData = dot(data);
+
+        return res.json({
+            status: 1,
+            result: {
+                encData
+            },
+        });
+    } catch (error) {
+        logger("error", "API | Provider | Get All", `${error.message}`, req);
+        sendError(error, "API | Provider | Get All",req.originalUrl);
+        return res.json({
+            status: 0,
+            msg: ERR_MSG.INTERNAL_ERROR,
+        });
+    }
+};
+
+exports.getGamesList = async (req, res) => {
+    try {
+        const data = await GameList.findAll({
+          where: { provider_code: req.params.provider },
+          attributes: ["provider", "provider_code","game_name","game_code","game_type", "status"],
+          order: [
+            ["status", "DESC"],
+          ],
+        });
+
+        const encData = dot(data);
+
+        return res.json({
+            status: 1,
+            result: {
+                encData
+            },
+        });
+    } catch (error) {
+        logger("error", "API | Provider | Get All", `${error.message}`, req);
+        sendError(error, "API | Provider | Get All",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -193,7 +250,7 @@ exports.getAllGames = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Provider | Get All", `${error.message}`, req);
-
+        sendError(error, "API | Provider | Get All",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -242,7 +299,7 @@ exports.checkProvider = async (req, res) => {
         }
     } catch (error) {
         logger("error", "API | Provider | Check", `${error.message}`, req);
-
+        sendError(error, "API | Provider | Check",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -271,7 +328,7 @@ exports.getGamesById = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Provider | Get By ID", `${error.message}`, req);
-
+        sendError(error, "API | Provider | Get By ID",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -299,7 +356,7 @@ exports.updategame = async (req, res) => {
         return res.json({ status: 1 });
     } catch (error) {
         logger("error", "API | Provider | Update", `${error.message}`, req);
-
+        sendError(error, "API | Provider | Update",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -382,8 +439,8 @@ exports.launchGame = async (req, res) => {
             });
         }
     } catch (error) {
-        logger("error", "API | Provider | Get By ID", `${error.message}`, req);
-
+        logger("error", "API | Provider | Launch Game", `${error.message}`, req);
+        sendError(error, "API | Provider | Launch Game",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,

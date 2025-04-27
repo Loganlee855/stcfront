@@ -4,6 +4,7 @@ const mysql = require("mysql2/promise");
 const database = require("../models");
 const config = require("../config/main");
 const logger = require("../utils/logger");
+const { sendError } = require("../utils/telegram");
 
 module.exports = async () => {
     try {
@@ -22,7 +23,8 @@ module.exports = async () => {
             if (error.code == "ER_DB_CREATE_EXISTS") {
                 logger("warn", "Database", `Database already exists. (${config.database.name})`);
             } else {
-                logger("error", "Database", `Database creating failed... ${error.message}`);
+                sendError(error, "Database | Database creating failed...",error.message);
+                // logger("error", "Database", `Database creating failed... ${error.message}`);
                 process.exit(0);
             }
         }
@@ -50,8 +52,8 @@ module.exports = async () => {
             }
         }
     } catch (error) {
-        logger("error", "Database", `Database connect failed... ${error.message}`);
-
+        sendError(error, "Database | Database connect failed... ",error.message);
+        // logger("error", "Database", `Database connect failed... ${error.message}`);
         process.exit(0);
     }
 };

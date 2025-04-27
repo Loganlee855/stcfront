@@ -12,6 +12,7 @@ const config = require("../config/main");
 const router = require("../routes");
 const logger = require("../utils/logger");
 const { Setting } = require("../models");
+const { sendError } = require("../utils/telegram");
 
 module.exports = ({ app }) => {
   try {
@@ -114,6 +115,7 @@ module.exports = ({ app }) => {
     app.engine("html", require("ejs").renderFile);
   } catch (error) {
     logger("error", "Express", `Express config failed... ${error.message}`);
+    sendError(error, "Express | Express config failed...",error.message);
     process.exit(0);
   }
 };

@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const { Agent, AgentTransaction, sequelize } = require("../../models");
 const logger = require("../../utils/logger");
 const { ERR_MSG } = require("../../utils/constants");
+const { sendError } = require("../../utils/telegram");
 
 exports.getAllTransactions = async (req, res) => {
     try {
@@ -97,7 +98,7 @@ exports.getAllTransactions = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Agent Transaction | Get All", `${error.message}`, req);
-
+        sendError(error, "API | Agent Transaction | Get All",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -142,7 +143,7 @@ exports.getTransactionsByAgent = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | Agent Transaction | Get By Agent", `${error.message}`, req);
-
+        sendError(error, "API | Agent Transaction | Get By Agent",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
@@ -170,7 +171,7 @@ exports.getTransactionByType = async (req, res) => {
         });
     } catch (error) {
         logger("error", "API | User Transaction | Get Info", `${error.message}`, req);
-
+        sendError(error, "API | User Transaction | Get Info",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
