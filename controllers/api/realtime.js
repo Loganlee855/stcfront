@@ -5,6 +5,7 @@ const { ERR_MSG } = require("../../utils/constants");
 const { dot, det } = require("../../utils/common");
 const { sendError } = require("../../utils/telegram");
 
+
 exports.getRealTimeInfo = async (req, res) => {
     try {
         const agent = await Agent.findByPk(req.session.auth.id);

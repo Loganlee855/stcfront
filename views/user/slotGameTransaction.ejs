@@ -383,7 +383,7 @@
               data: "wager_code",
               orderable: false,
               render: function(data, type, row) {
-                return `<button onclick="openMap('${data}')" class="px-1 rounded inline-block border border-theme-1 text-theme-2 dark:border-theme-6">Round Details</button>`;
+                return `<button onclick="handleRoundDetails('${data}')" class="px-1 rounded inline-block border border-theme-1 text-theme-2 dark:border-theme-6">Details</button>`;
               }
             }
           ],
@@ -469,6 +469,25 @@
         },
       });
     });
+
+
+    function handleRoundDetails(id) {
+      $('#card-loading').show();
+      $.ajax({
+        type: "POST",
+        url: `/api/game_transaction/${id}/details`,
+        success: function(res) {
+          if (res.status) {
+            showToast("success", "<%= __('message.success') %>");
+            popitup(res.data);
+            drawTable();
+          } else {
+            showToast("error", res.msg);
+            drawTable();
+          }
+        },
+      });
+    }
 
     getAgentsFunc();
   </script>

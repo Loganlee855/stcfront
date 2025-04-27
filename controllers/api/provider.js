@@ -6,7 +6,6 @@ const { requestForCheck } = require("../../utils/request");
 const { dot, det } = require("../../utils/common");
 const axios = require("axios");
 const MD5 = require("md5.js");
-const qs = require('qs');
 const config = require("../../config/main");
 const { sendError } = require("../../utils/telegram");
 

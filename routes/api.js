@@ -89,6 +89,7 @@ router.delete("/checkup/:id", checkupController.deleteCheckup);
 
 // game transaction routes
 router.post("/game_transaction", gameTransactionController.getAllGameTransactions);
+router.post("/game_transaction/:round_id/details", gameTransactionController.getTransactionsDetails);
 
 // provider routes
 router.get("/provider", providerController.getAllProviders);

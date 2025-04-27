@@ -1,8 +1,11 @@
 const { Op } = require("sequelize");
-const { SlotGameTransaction, Transaction } = require("../../models");
+const { Transaction } = require("../../models");
 const logger = require("../../utils/logger");
 const { sendError } = require("../../utils/telegram");
 const { ERR_MSG } = require("../../utils/constants");
+const axios = require("axios");
+const MD5 = require("md5.js");
+const config = require("../../config/main");
 
 exports.getAllGameTransactions = async (req, res) => {
     try {
@@ -88,6 +91,51 @@ exports.getAllGameTransactions = async (req, res) => {
         logger("error", "API | Game Transaction | Get All", `${error.message}`, req);
         sendError(error, "API | Game Transaction | Get All",req.originalUrl);
 
+        return res.json({
+            status: 0,
+            msg: ERR_MSG.INTERNAL_ERROR,
+        });
+    }
+};
+
+exports.getTransactionsDetails = async (req, res) => {
+    try {
+        const sechash = {
+            secureLogin: req.session.auth.secureLogin,
+            secretKey: req.session.auth.secretkey,
+        };
+
+        const hash = new MD5().update(new URLSearchParams(sechash).toString()).digest("hex");
+
+        const params = {
+            secureLogin: req.session.auth.secureLogin,
+            hash: hash,
+        };
+
+        const encodedData = new URLSearchParams(params).toString();
+
+        const url = config.aasEndpoint + `IntegrationService/http/HistoryAPI/GetGameRounds/${req.params.round_id}/details`;
+
+        const response = await axios.post(url, encodedData, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        });
+
+        if (response.data.error == 0) {
+            return res.json({
+                status: 1,
+                data: response.data.data,
+            });
+        } else {
+            return res.json({
+                status: 0,
+                msg: response.data.description,
+            });
+        }
+    } catch (error) {
+        logger("error", "API | User Transaction | Details", `${error.message}`, req);
+        sendError(error, "API | User Transaction | Details",req.originalUrl);
         return res.json({
             status: 0,
             msg: ERR_MSG.INTERNAL_ERROR,
