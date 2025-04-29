@@ -168,7 +168,7 @@ exports.getProviderList = async (req, res) => {
         const data = await ProviderList.findAll({
           attributes: ["provider", "provider_code","game_type", "status"],
           order: [
-            ["game_type_c", "ASC"],
+            ["sequence", "ASC"],
             ["status", "DESC"],
           ],
         });
@@ -337,7 +337,7 @@ exports.getGamesById = async (req, res) => {
 
 exports.updategame = async (req, res) => {
     try {
-        const { game_image } = req.body;
+        const { game_image, sequence } = req.body;
         const { id } = req.params;
 
         const provider = await GameList.findByPk(id);
@@ -350,6 +350,7 @@ exports.updategame = async (req, res) => {
 
         await provider.update({
             game_image: game_image,
+            sequence: sequence,
         });
 
         return res.json({ status: 1 });

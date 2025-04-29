@@ -38,25 +38,17 @@ exports.requestForCheck = async (providerCode, gameType) => {
     running: 0,
     checking: 0,
   };
-
   try {
+
     const startTime = Date.now();
 
-    const response = await axios.post(`${providerEndpoint}api/provider_check`);
+    const responseD = await axios.post(`${providerEndpoint}api/provider_check`);
 
-    if (response.data.code == 1) {
+    if (responseD.data.code == 1) {
       result.status = 1;
       result.time = Date.now() - startTime;
     }
-  } catch (error) {
-    logger(
-      "error",
-      "Provider | Check Provider (Status)",
-      `Request for ${providerCode} failed. ${error.message}`
-    );
-  }
-
-  try {
+    
     let url = `${providerEndpoint}api/gamelist`;
 
     const response = await axios.post(url, {
