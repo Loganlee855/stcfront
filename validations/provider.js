@@ -15,6 +15,7 @@ const schemas = {
     }),
     updateg: Joi.object({
         game_image: Joi.string().required(),
+        sequence: Joi.number().integer().min(0),
     }),
     setStatus: Joi.object({
         status: Joi.string().required(),

@@ -147,7 +147,7 @@
                 } else {
                     providerTable = $("#provider-datatable").DataTable({
                         ...dataTableGlobalConfig,
-                        order: [[2, "desc"]],
+                        order: [['sequence', "asc"]],
                         columns: [
                         { title: `<%= __('provider.table.no') %>`, data: "no", width: "60px", orderable: false },
                         { title: `<%= __('provider.table.provider_code') %>`, data: "provider_code",orderable: false },
