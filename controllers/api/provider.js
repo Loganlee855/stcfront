@@ -236,7 +236,9 @@ exports.getAllGames = async (req, res) => {
             where: query,
             offset: Number(start),
             limit: Number(length),
-            order: [[order, dir]],
+            order: [
+                ["sequence", "ASC"],
+            ],
         });
 
         return res.json({
