@@ -238,6 +238,7 @@ exports.getAllGames = async (req, res) => {
             limit: Number(length),
             order: [
                 ["sequence", "ASC"],
+                [order, dir],
             ],
         });
 
