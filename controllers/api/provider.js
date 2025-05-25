@@ -7,7 +7,7 @@ const { dot, det } = require("../../utils/common");
 const axios = require("axios");
 const MD5 = require("md5.js");
 const config = require("../../config/main");
-const { sendError } = require("../../utils/telegram");
+const { sendError, uploadFileFromUrlToS3,updateGameImages } = require("../../utils/telegram");
 
 exports.createProvider = async (req, res) => {
     try {
@@ -351,8 +351,10 @@ exports.updategame = async (req, res) => {
             });
         }
 
+        const images = await uploadFileFromUrlToS3(game_image);
+
         await provider.update({
-            game_image: game_image,
+            game_image: images,
             sequence: sequence,
         });
 

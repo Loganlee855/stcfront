@@ -34,7 +34,7 @@
                                             <div class="mb-5">
                                                 <div class="ml-2 mr-2 pt-5 flex items-center justify-between text-theme-14">
                                                     <%= __('docs.label.api_endpoint') %>:
-                                                    <input id="site_endpoint" value="<%= settings.api_url %>" class="site_endpoint input w-full border ml-8 flex-1" readonly />
+                                                    <input id="site_endpoint" value="<%= settings.api_url %>IntegrationService/http/api" class="site_endpoint input w-full border ml-8 flex-1" readonly />
                                                     <button
                                                             type="button"
                                                             data-clipboard-target="#site_endpoint"
@@ -61,16 +61,13 @@
                                                         </button>
                                                         <br>
                                                         <button type="button" data-clipboard-target="#user_create" class="btn button button--sm bg-theme-1 text-white mt-1">POST</button> 
-                                                        <a class="transfer_api" id="user_create">{APIURL}/IntegrationService/http/CasinoGameAPI/account/create</a>
+                                                        <a class="transfer_api" id="user_create">{APIURL}/account/create</a>
                                                         <pre>
 <code id="create-user">
-    {
-        "method": "user_create",
-        "agent_code": "<%= session.auth.agentCode %>",
-        "agent_token": "<%= session.auth.token %>",
-        "user_code": "test"
-    }
-
+- Example: {APIURL}/account/create?secureLogin=<%= session.auth.secureLogin %>&externalPlayerId=tes123&hash=hash
+- Hash : [
+md5(secureLogin=<%= session.auth.secureLogin %>&externalPlayerId=tes123&secretKey=<%= session.auth.secretkey %>);
+]
 </code>
                                                     </pre>
                                                     </div>
@@ -115,7 +112,7 @@
                                                         </button>
                                                         <br>
                                                         <button type="button" data-clipboard-target="#balance_transfer" class="btn button button--sm bg-theme-1 text-white mt-1">POST</button> 
-                                                        <a class="transfer_api" id="balance_transfer">{APIURL}/IntegrationService/http/CasinoGameAPI/balance/transfer</a>
+                                                        <a class="transfer_api" id="balance_transfer">{APIURL}/balance/transfer</a>
                                                         <pre>
 <code id="add-balance">
     {
@@ -170,7 +167,7 @@
                                                         </button>
                                                         <br>
                                                         <button type="button" data-clipboard-target="#balance_withdraw" class="btn button button--sm bg-theme-1 text-white mt-1">POST</button> 
-                                                        <a class="transfer_api" id="balance_withdraw">{APIURL}/IntegrationService/http/CasinoGameAPI/balance/withdraw</a>
+                                                        <a class="transfer_api" id="balance_withdraw">{APIURL}/balance/withdraw</a>
                                                         <pre>
 <code id="sub-balance">
     {
@@ -225,7 +222,7 @@
                                                         </button>
                                                         <br>
                                                         <button type="button" data-clipboard-target="#balance_current" class="btn button button--sm bg-theme-1 text-white mt-1">POST</button> 
-                                                        <a class="transfer_api" id="balance_current">{APIURL}/IntegrationService/http/CasinoGameAPI/balance/current</a>
+                                                        <a class="transfer_api" id="balance_current">{APIURL}/balance/current</a>
                                                         <pre>
 <code id="balance-current">
     {
@@ -287,7 +284,7 @@
                                                         </button>
                                                         <br>
                                                         <button type="button" data-clipboard-target="#user_create" class="btn button button--sm bg-theme-1 text-white mt-1">POST</button> 
-                                                        <a class="transfer_api" id="user_create">{APIURL}/IntegrationService/http/CasinoGameAPI/balance/current</a>
+                                                        <a class="transfer_api" id="user_create">{APIURL}/balance/current</a>
                                                         <pre>
 <code id="slot-game-launch-transfer">
     {
