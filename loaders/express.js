@@ -56,7 +56,7 @@ module.exports = ({ app }) => {
           const settings = await Setting.findOne();
           res.locals.settings = settings;
         }
-        res.locals.baseUrl = `${req.protocol}://${req.get('host')}`;  
+        res.locals.baseUrl = `https://${req.get('host')}`;  
         next();
       } catch (err) {
         next(err);
