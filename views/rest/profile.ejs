@@ -3,168 +3,310 @@
 <!-- header -->
 <%- include('../shared/header.ejs', {title: __('profile.page_title') }) -%>
 
-<body class="app">
-  <!-- preloader -->
+  <body class="app">
+    <!-- preloader -->
 
 
-  <!-- mobile menu -->
-  <%- include('../shared/mobile.ejs') -%>
+    <!-- mobile menu -->
+    <%- include('../shared/mobile.ejs') -%>
 
-  <div class="flex">
-    <!-- sidebar -->
-    <%- include('../shared/sidebar.ejs') -%>
+      <div class="flex">
+        <!-- sidebar -->
+        <%- include('../shared/sidebar.ejs') -%>
 
-    <div class="content">
-      <!-- topbar -->
-      <%- include('../shared/topbar.ejs') -%>
+          <div class="content">
+            <!-- topbar -->
+            <%- include('../shared/topbar.ejs') -%>
 
-      <!-- main content here -->
-      <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-12 xxl:col-span-12 grid grid-cols-12 gap-6">
-          <div class="col-span-12 mt-2">
-            <div class="intro-y flex items-center h-10">
-              <h2 class="text-lg font-medium truncate mr-5"><%= __('profile.title') %></h2>
-            </div>
-            <div class="grid grid-cols-12 gap-6">
-              <div class="col-span-12 lg:col-span-6 xxl:col-span-4 flex lg:block flex-col-reverse">
-                <div class="intro-y box mt-2">
-                  <div class="relative flex items-center gap-5 py-2">
-                    <div class="h-10 image-fit"></div>
-                    <div class="mr-auto gap-5">
-                      <div class="flex items-center gap-4">
-                        <div class="font-medium text-base items-center">
-                          <h3 class="mb-0 text-theme-14" style="font-size: 18px" id="agent-nickname"></h3>
+              <!-- main content here -->
+              <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12 xxl:col-span-12 grid grid-cols-12 gap-6">
+                  <div class="col-span-12 mt-2">
+                    <div class="intro-y flex items-center h-10">
+                      <h2 class="text-lg font-medium truncate mr-5">
+                        <%= __('profile.title') %>
+                      </h2>
+                    </div>
+                    <div class="grid grid-cols-12 gap-6">
+                      <div class="col-span-12 lg:col-span-6 xxl:col-span-4 flex lg:block flex-col-reverse">
+                        <div class="intro-y box mt-2">
+                          <div class="relative flex items-center gap-5 py-2">
+                            <div class="h-10 image-fit"></div>
+                            <div class="mr-auto gap-5">
+                              <div class="flex items-center gap-4">
+                                <div class="font-medium text-base items-center">
+                                  <h3 class="mb-0 text-theme-14" style="font-size: 18px" id="agent-nickname"></h3>
+                                </div>
+                                <h2 class="text-gray-600" style="font-size: 13px">
+                                  <%= __('profile.detail.title') %>
+                                </h2>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="p-5 border-t border-gray-200 dark:border-dark-5">
+                            <div class="grid grid-cols-12 gap-3 my-4">
+                              <div class="flex col-span-3 text-theme-14">
+                                <%= __('profile.detail.balance') %> :
+                              </div>
+                              <div class="col-span-9 text-theme-14">
+                                <span id="agent-balance"></span>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-3 my-4">
+                              <div class="flex col-span-3 text-theme-14">
+                                <%= __('profile.detail.agent_code') %> :
+                              </div>
+                              <div class="col-span-9 text-theme-14">
+                                <span id="agent-code"></span>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-3 my-4 items-center">
+                              <div class="flex col-span-3 text-theme-14">SecureLogin :</div>
+                              <div class="col-span-9">
+                                <div class="relative mt-1">
+                                  <input type="text" class="input pr-12 w-full border col-span-4" id="agent-secure"
+                                    readonly="" />
+                                  <button type="button" id="copy_btn" data-clipboard-target="#agent-secure"
+                                    class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2 copy-button"
+                                    style="outline: none !important">
+                                    <i data-feather="clipboard" class="w-4 h-4"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-3 my-4 items-center">
+                              <div class="flex col-span-3 text-theme-14">SecretKey :</div>
+                              <div class="col-span-9">
+                                <div class="relative mt-1">
+                                  <input type="text" class="input pr-12 w-full border col-span-4" id="agent-token"
+                                    readonly="" />
+                                  <button type="button" id="copy_btn" data-clipboard-target="#agent-token"
+                                    class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2 copy-button"
+                                    style="outline: none !important">
+                                    <i data-feather="clipboard" class="w-4 h-4"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-3 my-4 text-theme-14">
+                              <div class="flex col-span-3">
+                                <%= __('profile.detail.percent') %> :
+                              </div>
+                              <div class="col-span-9"><span id="agent-percent"></span> (%)</div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-3 my-4">
+                              <div class="flex col-span-3 text-theme-14">
+                                <%= __('profile.detail.agent_type') %> :
+                              </div>
+                              <div class="col-span-9">
+                                <span id="agent-type"></span>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-3 my-4">
+                              <div class="flex col-span-3 text-theme-14">
+                                <%= __('profile.detail.api_type') %> :
+                              </div>
+                              <div class="col-span-9">
+                                <span id="api-type"></span>
+                              </div>
+                            </div>
+                            <div class="grid grid-cols-12 gap-3 my-4">
+                              <div class="flex col-span-3 text-theme-14">
+                                <%= __('profile.detail.status') %> :
+                              </div>
+                              <div class="col-span-9">
+                                <span id="agent-status"></span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <h2 class="text-gray-600" style="font-size: 13px"><%= __('profile.detail.title') %></h2>
                       </div>
-                    </div>
-                  </div>
-                  <div class="p-5 border-t border-gray-200 dark:border-dark-5">
-                    <div class="grid grid-cols-12 gap-3 my-4">
-                      <div class="flex col-span-3 text-theme-14">
-                        <%= __('profile.detail.balance') %> :
-                      </div>
-                      <div class="col-span-9 text-theme-14">
-                        <span id="agent-balance"></span>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-3 my-4">
-                      <div class="flex col-span-3 text-theme-14">
-                        <%= __('profile.detail.agent_code') %> :
-                      </div>
-                      <div class="col-span-9 text-theme-14">
-                        <span id="agent-code"></span>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-3 my-4 items-center">
-                      <div class="flex col-span-3 text-theme-14">SecureLogin :</div>
-                      <div class="col-span-9">
-                        <div class="relative mt-1">
-                          <input type="text" class="input pr-12 w-full border col-span-4" id="agent-secure" readonly="" />
-                          <button type="button" id="copy_btn" data-clipboard-target="#agent-secure" class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2 copy-button" style="outline: none !important">
-                            <i data-feather="clipboard" class="w-4 h-4"></i>
-                          </button>
+
+                      <div class="col-span-12 lg:col-span-6 xxl:col-span-8">
+                        <div class="intro-y box lg:mt-2">
+                          <div class="relative flex items-center gap-5 py-2">
+                            <div class="h-10 image-fit"></div>
+                            <div class="mr-auto">
+                              <h2 class="font-medium text-base mr-auto text-theme-14" style="font-size: 18px">
+                                <%= __('profile.change.title') %>
+                              </h2>
+                            </div>
+                          </div>
+                          <div class="p-5 border-t border-gray-200 dark:border-dark-5">
+                            <div class="grid grid-cols-12 gap-5">
+                              <div class="col-span-12">
+                                <div class="mt-1">
+                                  <label class="text-theme-14">
+                                    <%= __('profile.change.password') %>
+                                  </label>
+                                  <input type="password" class="input w-full border mt-1" id="agent-old-password" />
+                                </div>
+                              </div>
+                              <div class="col-span-12">
+                                <div class="mt-1">
+                                  <label class="text-theme-14">
+                                    <%= __('profile.change.new_password') %>
+                                  </label>
+                                  <input type="password" class="input w-full border mt-1" id="agent-new-password2" />
+                                </div>
+                              </div>
+                              <div class="col-span-12">
+                                <div class="mt-1">
+                                  <label class="text-theme-14">
+                                    <%= __('profile.change.new_password_confirm') %>
+                                  </label>
+                                  <input type="password" class="input w-full border mt-1" id="agent-new-password3" />
+                                </div>
+                              </div>
+                            </div>
+                            <div class="flex justify-end mt-3">
+                              <button type="button" id="action-btn" class="button w-20 bg-theme-1 text-white ml-auto">
+                                <%= __('profile.change.change') %>
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-3 my-4 items-center">
-                      <div class="flex col-span-3 text-theme-14">SecretKey :</div>
-                      <div class="col-span-9">
-                        <div class="relative mt-1">
-                          <input type="text" class="input pr-12 w-full border col-span-4" id="agent-token" readonly="" />
-                          <button type="button" id="copy_btn" data-clipboard-target="#agent-token" class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2 copy-button" style="outline: none !important">
-                            <i data-feather="clipboard" class="w-4 h-4"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-3 my-4 text-theme-14">
-                      <div class="flex col-span-3">
-                        <%= __('profile.detail.percent') %> :
-                      </div>
-                      <div class="col-span-9"><span id="agent-percent"></span> (%)</div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-3 my-4">
-                      <div class="flex col-span-3 text-theme-14">
-                        <%= __('profile.detail.agent_type') %> :
-                      </div>
-                      <div class="col-span-9">
-                        <span id="agent-type"></span>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-3 my-4">
-                      <div class="flex col-span-3 text-theme-14">
-                        <%= __('profile.detail.api_type') %> :
-                      </div>
-                      <div class="col-span-9">
-                        <span id="api-type"></span>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-3 my-4">
-                      <div class="flex col-span-3 text-theme-14">
-                        <%= __('profile.detail.status') %> :
-                      </div>
-                      <div class="col-span-9">
-                        <span id="agent-status"></span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="col-span-12 lg:col-span-6 xxl:col-span-8">
-                <div class="intro-y box lg:mt-2">
-                  <div class="relative flex items-center gap-5 py-2">
-                    <div class="h-10 image-fit"></div>
-                    <div class="mr-auto">
-                      <h2 class="font-medium text-base mr-auto text-theme-14" style="font-size: 18px"><%= __('profile.change.title') %></h2>
-                    </div>
-                  </div>
-                  <div class="p-5 border-t border-gray-200 dark:border-dark-5">
-                    <div class="grid grid-cols-12 gap-5">
-                      <div class="col-span-12">
-                        <div class="mt-1">
-                          <label class="text-theme-14"><%= __('profile.change.password') %></label>
-                          <input type="password" class="input w-full border mt-1" id="agent-old-password" />
-                        </div>
-                      </div>
-                      <div class="col-span-12">
-                        <div class="mt-1">
-                          <label class="text-theme-14"><%= __('profile.change.new_password') %></label>
-                          <input type="password" class="input w-full border mt-1" id="agent-new-password2" />
-                        </div>
-                      </div>
-                      <div class="col-span-12">
-                        <div class="mt-1">
-                          <label class="text-theme-14"><%= __('profile.change.new_password_confirm') %></label>
-                          <input type="password" class="input w-full border mt-1" id="agent-new-password3" />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex justify-end mt-3">
-                      <button type="button" id="action-btn" class="button w-20 bg-theme-1 text-white ml-auto">
-                        <%= __('profile.change.change') %>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <!-- main content here -->
           </div>
-        </div>
       </div>
 
-      <!-- main content here -->
-    </div>
-  </div>
+      <!-- footer -->
+      <%- include('../shared/footer.ejs') -%>
 
-  <!-- footer -->
-  <%- include('../shared/footer.ejs') -%>
+        <!-- global -->
+        <%- include('../shared/global.ejs') -%>
 
-  <!-- global -->
-  <%- include('../shared/global.ejs') -%>
+          <script>
+            const sessionAgentId = `<%= session.auth.uuid %>`;
+            let agent_role = {
+              1: `<span class="text-theme-9 "><%= __('profile.change.distribution') %></span>`,
+              2: `<span class="text-theme-12 "><%= __('profile.change.run') %></span>`,
+              3: `<span class="text-theme-6 "><%= __('profile.change.parallel') %></span>`,
+            };
 
-  <script src="/js/profile.js"></script>
-</body>
+            let agent_status = {
+              1: `<span class="text-theme-9 "><%= __('profile.alert.open') %></span>`,
+              0: `<span class="text-theme-6 "><%= __('profile.alert.close') %></span>`,
+            };
+
+            let api_method = {
+              1: `<div class="text-theme-9"><%= __('profile.alert.transfer') %></div>`,
+              0: `<div class="text-theme-6"><%= __('profile.alert.seamless') %></div>`,
+            };
+
+            const clipboard = new ClipboardJS("#copy_btn");
+
+            clipboard.on("success", function (e) {
+              showToast("success", e.text);
+              e.clearSelection();
+            });
+
+            clipboard.on("error", function (e) {
+              showToast("error", "<%= __('common.copy_error') %>");
+            });
+
+            function validateUpdate(data) {
+              if (data.password.length < 5) {
+                showToast("warning", "Password must be at least 5 characters long.");
+                $("#agent-old-password").focus();
+                return false;
+              } else if (data.new_password.length < 5) {
+                showToast("warning", "New Password must be at least 5 characters long.");
+                $("#agent-new-password2").focus();
+                return false;
+              } else if (data.new_password_confirm.length < 5) {
+                showToast("warning", "Password Confirm must be at least 5 characters long.");
+                $("#agent-new-password3").focus();
+                return false;
+              } else if (data.new_password !== data.new_password_confirm) {
+                showToast("warning", "<%= __('profile.password_confirm_not_match') %>");
+                $("#agent-old-password").val('');
+                $("#agent-new-password2").val('');
+                $("#agent-new-password3").val('');
+                return false;
+              }
+
+              return true;
+            }
+
+            function getMyInfo() {
+              $.ajax({
+                type: "POST",
+                url: `/api/agent/${sessionAgentId}/details`,
+                dataType: "json",
+                success: function (res) {
+                  if (res.status) {
+                    const agentInfo = det(res.agent);
+                    if (agentInfo) {
+                      $("#agent-nickname").html(agentInfo.agentCode.toLocaleUpperCase());
+                      $("#agent-balance").html(agentInfo.currency + " " + agentInfo.balance.toLocaleString());
+                      $("#agent-code").html(agentInfo.agentCode);
+                      $("#agent-secure").val(agentInfo.secureLogin);
+                      $("#agent-token").val(agentInfo.secretkey);
+                      $("#agent-percent").html(agentInfo.percent);
+                      $("#agent-type").html(agent_role[agentInfo.agentType]);
+                      $("#agent-status").html(agent_status[agentInfo.status]);
+                      $("#api-type").html(api_method[agentInfo.apiType]);
+                    }
+                  }
+                },
+                error: function (data) {
+                  showToast("error", "<%= __('common.server_error') %>");
+                },
+              });
+            }
+
+            $("#action-btn").click(function () {
+              const requestData = {
+                id: $("#user_id").val(),
+                password: $("#agent-old-password").val(),
+                new_password: $("#agent-new-password2").val(),
+                new_password_confirm: $("#agent-new-password3").val(),
+              };
+
+              if (!validateUpdate(requestData)) {
+                return;
+              }
+
+              let type, url;
+              type = "put";
+              url = `/api/agent/${sessionAgentId}/change_password`;
+              handleUpdate(type, url, requestData);
+            });
+
+            function handleUpdate(type, url, data) {
+              showConfirmAlert("<%= __('profile.do_you_want_to_change') %>", function () {
+                $.ajax({
+                  type: type,
+                  url: url,
+                  data: data,
+                  dataType: "json",
+                  success: function (res) {
+                    if (res.status == 0) {
+                      showToast("error", res.msg);
+                    } else {
+                      showToast("success", "<%= __('common.operated_successfully') %>");
+                      setTimeout(function () {
+                        location.reload();
+                      }, 1000);
+                    }
+                  },
+                  error: function (res) {
+                    getMyInfo();
+                    showToast("error", "<%= __('common.server_error') %>");
+                  },
+                });
+              });
+            }
+
+            getMyInfo();
+          </script>
+  </body>
 
 </html>

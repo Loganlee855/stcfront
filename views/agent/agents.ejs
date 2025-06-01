@@ -2,557 +2,1359 @@
 <html lang="en" id="themeMode" class="light">
 <!-- header -->
 <%- include('../shared/header.ejs', {title: __('agents.page_title')}) -%>
-<style>
-  /* Override semua header table termasuk dari DataTables dan Bootstrap */
-  #agent-treetable thead th {
-    background-color: transparent !important;
-    color: white !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-  }
+  <style>
+    /* Override semua header table termasuk dari DataTables dan Bootstrap */
+    #agent-treetable thead th {
+      background-color: transparent !important;
+      color: white !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+    }
 
-  /* Pastikan thead tidak bawa background */
-  #agent-treetable thead {
-    background: transparent !important;
-  }
+    /* Pastikan thead tidak bawa background */
+    #agent-treetable thead {
+      background: transparent !important;
+    }
 
-  /* Kalau pakai datatables sorting */
-  #agent-treetable thead th.sorting::after,
-  #agent-treetable thead th.sorting_asc::after,
-  #agent-treetable thead th.sorting_desc::after {
-    color: white !important;
-  }
+    /* Kalau pakai datatables sorting */
+    #agent-treetable thead th.sorting::after,
+    #agent-treetable thead th.sorting_asc::after,
+    #agent-treetable thead th.sorting_desc::after {
+      color: white !important;
+    }
 
-  #agent-treetable tbody td {
-    background-color: transparent !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-  }
+    #agent-treetable tbody td {
+      background-color: transparent !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
 
-  #agent-treetable tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-  }
-</style>
+    #agent-treetable tbody tr:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+  </style>
 
-<body class="app">
-  <!-- preloader -->
-  <%- include('../shared/preloader.ejs') -%>
+  <body class="app">
+    <!-- preloader -->
+    <%- include('../shared/preloader.ejs') -%>
 
-  <!-- mobile menu -->
-  <%- include('../shared/mobile.ejs') -%>
+      <!-- mobile menu -->
+      <%- include('../shared/mobile.ejs') -%>
 
-  <div class="flex">
-    <!-- sidebar -->
-    <%- include('../shared/sidebar.ejs') -%>
+        <div class="flex">
+          <!-- sidebar -->
+          <%- include('../shared/sidebar.ejs') -%>
 
-    <div class="content">
-      <!-- topbar -->
-      <%- include('../shared/topbar.ejs') -%>
+            <div class="content">
+              <!-- topbar -->
+              <%- include('../shared/topbar.ejs') -%>
 
-      <!-- main content here -->
-      <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-12 xxl:col-span-12 grid grid-cols-12 gap-6">
-          <div class="col-span-12 mt-2">
-            <div class="intro-y flex items-center h-10">
-              <h2 class="text-lg font-medium truncate mr-5">
-                <%= __('agents.title') %>
-              </h2>
-              <a href="" class="ml-auto flex text-theme-1 dark:text-theme-10"> <i data-feather="refresh-ccw" class="w-4 h-4 mr-3"></i>
-                <%= __('common.reload') %>
-              </a>
-            </div>
-
-            <div class="col-span-12 intro-y box mt-2 p-5">
-              <div>
-                <div class="col-12">
-                  <div id="card-loading" style="display: none;">
-                    <div class="center"><i data-loading-icon="ball-triangle" class="w-8 h-8"></i></div>
-                  </div>
-                  <div class="card border-primary">
-                    <div class="card-body">
-                      <div class="card-header flex justify-between items-center">
-                        <div style="font-size: 14px">
-                          <span class="text-theme-5">
-                            <%= __('agents.table_title') %>
-                          </span>
-                          <span id="agent-count" class="text-theme-5">(0)</span>
-                        </div>
-                        <button id="new-agent-show" class="button flex items-center justify-center bg-theme-1 text-white"><i data-feather="plus-circle" class="w-4 h-4 mr-2"></i>
-                          <%= __('agents.create') %>
-                        </button>
+                <!-- main content here -->
+                <div class="grid grid-cols-12 gap-6">
+                  <div class="col-span-12 xxl:col-span-12 grid grid-cols-12 gap-6">
+                    <div class="col-span-12 mt-2">
+                      <div class="intro-y flex items-center h-10">
+                        <h2 class="text-lg font-medium truncate mr-5">
+                          <%= __('agents.title') %>
+                        </h2>
+                        <a href="" class="ml-auto flex text-theme-1 dark:text-theme-10"> <i data-feather="refresh-ccw"
+                            class="w-4 h-4 mr-3"></i>
+                          <%= __('common.reload') %>
+                        </a>
                       </div>
-                      <div class="w-full border-t border-gray-200 dark:border-dark-5 mt-2"></div>
-                      <div class="card-body">
+
+                      <div class="col-span-12 intro-y box mt-2 p-5">
                         <div>
-                          <div class="mt-2 mb-2">
-                            <div class="float-left">
-                              <button class="button button--sm w-24 mr-1 border text-gray-700 dark:bg-dark-5 text-theme-5" onclick="expandTreeTable()">
-                                <%= __('agents.expand_all') %>
-                              </button>
-                              <button class="button button--sm w-24 mr-1 border text-gray-700 dark:bg-dark-5 text-theme-5" onclick="collapseTreeTable()">
-                                <%= __('agents.collapse_all') %>
-                              </button>
+                          <div class="col-12">
+                            <div id="card-loading" style="display: none;">
+                              <div class="center"><i data-loading-icon="ball-triangle" class="w-8 h-8"></i></div>
                             </div>
-                            <div class="float-right">
-                              <input type="text" class="input input--sm w-full border" id="agent-search" placeholder="Search" />
-                            </div>
-                          </div>
-                          <div class="col-sm-12">
-                            <div class="table-scrollable">
-                              <div class="table-responsive">
-                                <table id="agent-treetable" class="table table-striped table-bordered ">
-                                  <thead>
-                                    <tr>
-                                      <th class="sorting">
-                                        <%= __('agents.table.agent_code') %>
-                                      </th>
-                                      <th>
-                                        <%= __('agents.table.agent_name') %>
-                                      </th>
-                                      <th>
-                                        <%= __('agents.table.type') %>
-                                      </th>
-                                      <th>
-                                        <%= __('agents.table.api_type') %>
-                                      </th>
-                                      <th>
-                                        <%= __('agents.table.currency') %>
-                                      </th>
-                                      <th>
-                                        <%= __('agents.table.balance') %>
-                                      </th>
-                                      <th>
-                                        <%= __('agents.table.percent') %>
-                                      </th>
-                                      <th>
-                                        <%= __('agents.table.created_at') %>
-                                      </th>
-                                      <th style="width: 70px">
-                                        <%= __('agents.table.account_status') %>
-                                      </th>
-                                      <th style="width: 200px">
-                                        <%= __('agents.table.action') %>
-                                      </th>
-                                    </tr>
-                                  </thead>
-                                  <tbody id="agent-table-content"></tbody>
-                                </table>
+                            <div class="card border-primary">
+                              <div class="card-body">
+                                <div class="card-header flex justify-between items-center">
+                                  <div style="font-size: 14px">
+                                    <span class="text-theme-5">
+                                      <%= __('agents.table_title') %>
+                                    </span>
+                                    <span id="agent-count" class="text-theme-5">(0)</span>
+                                  </div>
+                                  <button id="new-agent-show"
+                                    class="button flex items-center justify-center bg-theme-1 text-white"><i
+                                      data-feather="plus-circle" class="w-4 h-4 mr-2"></i>
+                                    <%= __('agents.create') %>
+                                  </button>
+                                </div>
+                                <div class="w-full border-t border-gray-200 dark:border-dark-5 mt-2"></div>
+                                <div class="card-body">
+                                  <div>
+                                    <div class="mt-2 mb-2">
+                                      <div class="float-left">
+                                        <button
+                                          class="button button--sm w-24 mr-1 border text-gray-700 dark:bg-dark-5 text-theme-5"
+                                          onclick="expandTreeTable()">
+                                          <%= __('agents.expand_all') %>
+                                        </button>
+                                        <button
+                                          class="button button--sm w-24 mr-1 border text-gray-700 dark:bg-dark-5 text-theme-5"
+                                          onclick="collapseTreeTable()">
+                                          <%= __('agents.collapse_all') %>
+                                        </button>
+                                      </div>
+                                      <div class="float-right">
+                                        <input type="text" class="input input--sm w-full border" id="agent-search"
+                                          placeholder="Search" />
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                      <div class="table-scrollable">
+                                        <div class="table-responsive">
+                                          <table id="agent-treetable" class="table table-striped table-bordered ">
+                                            <thead>
+                                              <tr>
+                                                <th class="sorting">
+                                                  <%= __('agents.table.agent_code') %>
+                                                </th>
+                                                <th>
+                                                  <%= __('agents.table.agent_name') %>
+                                                </th>
+                                                <th>
+                                                  <%= __('agents.table.type') %>
+                                                </th>
+                                                <th>
+                                                  <%= __('agents.table.api_type') %>
+                                                </th>
+                                                <th>
+                                                  <%= __('agents.table.currency') %>
+                                                </th>
+                                                <th>
+                                                  <%= __('agents.table.balance') %>
+                                                </th>
+                                                <th>
+                                                  <%= __('agents.table.percent') %>
+                                                </th>
+                                                <th>
+                                                  <%= __('agents.table.created_at') %>
+                                                </th>
+                                                <th style="width: 70px">
+                                                  <%= __('agents.table.account_status') %>
+                                                </th>
+                                                <th style="width: 200px">
+                                                  <%= __('agents.table.action') %>
+                                                </th>
+                                              </tr>
+                                            </thead>
+                                            <tbody id="agent-table-content"></tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
+
+                        <!-- new agent modal -->
+                        <div class="modal" id="new-agent-modal">
+                          <div class="modal__content modal__content--xl">
+                            <div
+                              class="flex items-center px-5 py-5 sm:py-3 border-b border-gray-200 dark:border-dark-5">
+                              <h2 class="font-medium text-base mr-auto">
+                                <%= __('agents.new_modal.title') %>
+                              </h2>
+                            </div>
+                            <form id="new-agent-form" class="p-5 grid grid-cols-12 gap-4 row-gap-3">
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.new_modal.parent_agent') %>
+                                </label>
+                                <select class="input w-full border mt-1 flex-1" id="new-agent-parent-id"></select>
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.new_modal.agent_name') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="new-agent-name" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.new_modal.agent_code') %>
+                                </label>
+                                <div class="relative mt-1">
+                                  <input type="text" class="input pr-12 w-full border col-span-4" id="new-agent-code"
+                                    placeholder="<%= __('agents.new_modal.agent_code.placeholder') %>" />
+                                  <button type="button" id="new-agent-check-code"
+                                    class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2"
+                                    style="outline: none !important">
+                                    <%= __('agents.new_modal.confirm_duplication') %>
+                                  </button>
+                                </div>
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.new_modal.password') %>
+                                </label>
+                                <div class="relative mt-1">
+                                  <input type="text" class="input pr-12 w-full border col-span-4"
+                                    id="new-agent-password" placeholder="Password" />
+                                  <button type="button" id="new-agent-password-copy"
+                                    class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-10 text-white px-2 pr-10 copy-button"
+                                    style="outline: none !important; display: none;"
+                                    data-clipboard-target="#new-agent-password">
+                                    <i data-feather="clipboard" class="w-4 h-4"></i>
+                                  </button>
+                                  <button type="button" onclick="genPass('new-agent-password')"
+                                    class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-16 text-white px-2"
+                                    style="outline: none !important">
+                                    <i data-feather="refresh-ccw" class="w-4 h-4"></i>
+                                  </button>
+                                </div>
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.new_modal.percent') %>
+                                </label>
+                                <input type="number" class="input w-full border mt-1 flex-1" min="0" max="100" step="1"
+                                  id="new-agent-percent" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.new_modal.ip') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" placeholder="127.0.0.1"
+                                  id="new-agent-ip" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.new_modal.memo') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="new-agent-memo" />
+                              </div>
+                              <% if (session.auth.role==1) { %>
+                                <div class="col-span-6">
+                                  <label>
+                                    <%= __('agents.new_modal.admin_memo') %>
+                                  </label>
+                                  <input type="text" class="input w-full border mt-1 flex-1"
+                                    id="new-agent-admin-memo" />
+                                </div>
+                                <div class="col-span-6">
+                                  <label>
+                                    <%= __('agents.new_modal.currency') %>
+                                  </label>
+                                  <select class="input w-full border mt-1 flex-1" id="new-agent-currency"></select>
+                                </div>
+                                <% } %>
+                                  <div class="col-span-6">
+                                    <label>
+                                      <%= __('agents.new_modal.agent_type') %>
+                                    </label>
+                                    <select class="input w-full border mt-1 flex-1" id="new-agent-type">
+                                      <option value="2">
+                                        <%= __('agents.new_modal.agent_type.run') %>
+                                      </option>
+                                      <option value="3">
+                                        <%= __('agents.new_modal.agent_type.parallel') %>
+                                      </option>
+                                    </select>
+                                  </div>
+                                  <div class="col-span-6" id="new-agent-api-wrapper">
+                                    <label>
+                                      <%= __('agents.new_modal.api_type') %>
+                                    </label>
+                                    <select class="input w-full border mt-1 flex-1" id="new-agent-api">
+                                      <option value="1">
+                                        <%= __('agents.new_modal.api_type.transfer') %>
+                                      </option>
+                                      <!-- <option value="0"><%= __('agents.new_modal.api_type.seamless') %></option> -->
+                                    </select>
+                                  </div>
+                                  <div class="col-span-6" id="new-agent-endpoint-wrapper" style="display: none">
+                                    <label>
+                                      <%= __('agents.new_modal.site_endpoint') %>
+                                    </label>
+                                    <input type="text" class="input w-full border mt-1 flex-1" id="new-agent-endpoint"
+                                      placeholder="https://example.com (Do not input '/gold_api')" />
+                                  </div>
+                            </form>
+                            <div class="px-5 py-3 text-right border-t border-gray-200 dark:border-dark-5">
+                              <button type="button" data-dismiss="modal"
+                                class="button w-20 border text-gray-700 dark:border-dark-5 text-theme-1 mr-1">
+                                <%= __('agents.new_modal.cancel') %>
+                              </button>
+                              <button type="button" class="button w-20 bg-theme-1 text-white" id="new-agent-confirm">
+                                <%= __('agents.new_modal.create') %>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- update agent modal -->
+                        <div class="modal" id="update-agent-modal">
+                          <div class="modal__content modal__content--xl">
+                            <div
+                              class="flex items-center px-5 py-5 sm:py-3 border-b border-gray-200 dark:border-dark-5">
+                              <h2 class="font-medium text-base mr-auto">
+                                <%= __('agents.update_modal.title') %>
+                              </h2>
+                            </div>
+                            <form id="update-agent-form" class="p-5 grid grid-cols-12 gap-4 row-gap-3">
+                              <input type="text" id="update-agent-id" style="display: none" />
+
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.update_modal.parent_agent') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-parent-id"
+                                  readonly="" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.update_modal.agent_name') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-name" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.update_modal.agent_code') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-code"
+                                  readonly="" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.update_modal.password') %>
+                                </label>
+                                <div class="relative mt-1">
+                                  <input type="text" class="input pr-12 w-full border col-span-4"
+                                    id="update-agent-password" placeholder="Password" />
+                                  <button type="button" id="update-agent-password-copy"
+                                    class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-10 text-white px-2 pr-10 copy-button"
+                                    style="outline: none !important; display: none;"
+                                    data-clipboard-target="#update-agent-password">
+                                    <i data-feather="clipboard" class="w-4 h-4"></i>
+                                  </button>
+                                  <button type="button" onclick="genPass('update-agent-password')"
+                                    class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-16 text-white px-2"
+                                    style="outline: none !important">
+                                    <i data-feather="refresh-ccw" class="w-4 h-4"></i>
+                                  </button>
+                                </div>
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.update_modal.agent_secret_key') %>
+                                </label>
+                                <div class="relative mt-1">
+                                  <input type="text" class="input pr-12 w-full border col-span-4"
+                                    id="update-agent-secret-key" readonly="" />
+                                  <button type="button" id="copy-agent-secret-key"
+                                    class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2 copy-button"
+                                    style="outline: none !important" data-clipboard-target="#update-agent-secret-key">
+                                    <%= __('agents.update_modal.copy') %>
+                                  </button>
+                                </div>
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.update_modal.percent') %>
+                                </label>
+                                <input type="number" class="input w-full border mt-1 flex-1" min="0" max="100" step="1"
+                                  id="update-agent-percent" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.update_modal.ip') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-ip" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.update_modal.memo') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-memo" />
+                              </div>
+                              <% if (session.auth.role==1) { %>
+                                <div class="col-span-6">
+                                  <label>
+                                    <%= __('agents.update_modal.admin_memo') %>
+                                  </label>
+                                  <input type="text" class="input w-full border mt-1 flex-1"
+                                    id="update-agent-admin-memo" />
+                                </div>
+                                <% } %>
+                                  <div class="col-span-6">
+                                    <label>
+                                      <%= __('agents.update_modal.agent_type') %>
+                                    </label>
+                                    <select class="input w-full border mt-1 flex-1" id="update-agent-type">
+                                      <option value="2">
+                                        <%= __('agents.new_modal.agent_type.run') %>
+                                      </option>
+                                      <option value="3">
+                                        <%= __('agents.new_modal.agent_type.parallel') %>
+                                      </option>
+                                    </select>
+                                  </div>
+                                  <div class="col-span-6" id="update-agent-api-wrapper" style="display: none">
+                                    <label>
+                                      <%= __('agents.update_modal.api_type') %>
+                                    </label>
+                                    <select class="input w-full border mt-1 flex-1" id="update-agent-api">
+                                      <option value="1">
+                                        <%= __('agents.new_modal.api_type.transfer') %>
+                                      </option>
+                                      <!-- <option value="0"><%= __('agents.new_modal.api_type.seamless') %></option> -->
+                                    </select>
+                                  </div>
+                            </form>
+                            <div class="px-5 py-3 text-right border-t border-gray-200 dark:border-dark-5">
+                              <button type="button" data-dismiss="modal"
+                                class="button w-20 border text-gray-700 dark:border-dark-5 text-theme-1 mr-1">
+                                <%= __('agents.update_modal.cancel') %>
+                              </button>
+                              <button type="button" class="button w-20 bg-theme-1 text-white" id="update-agent-confirm">
+                                <%= __('agents.update_modal.confirm') %>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- detail agent modal -->
+                        <div class="modal" id="detail-agent-modal">
+                          <div class="modal__content modal__content--xl">
+                            <div
+                              class="flex items-center px-5 py-5 sm:py-3 border-b border-gray-200 dark:border-dark-5">
+                              <h2 class="font-medium text-base mr-auto">
+                                <%= __('agents.detail_modal.title') %>
+                              </h2>
+                            </div>
+                            <form id="detail-agent-form" class="p-5 grid grid-cols-12 gap-4 row-gap-3">
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.detail_modal.parent_agent') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-parent-id"
+                                  readonly="" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.detail_modal.agent_name') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-name"
+                                  readonly="" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.detail_modal.agent_code') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-code"
+                                  readonly="" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.detail_modal.agent_secret_key') %>
+                                </label>
+                                <div class="relative mt-1">
+                                  <input type="text" class="input pr-12 w-full border col-span-4"
+                                    id="detail-agent-secret-key" readonly="" />
+                                  <button type="button" id="copy-agent-secret-key"
+                                    class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2 copy-button"
+                                    style="outline: none !important" data-clipboard-target="#detail-agent-secret-key">
+                                    <%= __('agents.detail_modal.copy') %>
+                                  </button>
+                                </div>
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.detail_modal.percent') %>
+                                </label>
+                                <input type="number" class="input w-full border mt-1 flex-1" readonly=""
+                                  id="detail-agent-percent" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.detail_modal.ip') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-ip"
+                                  readonly="" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.detail_modal.memo') %>
+                                </label>
+                                <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-memo"
+                                  readonly="" />
+                              </div>
+                              <% if (session.auth.role==1) { %>
+                                <div class="col-span-6">
+                                  <label>
+                                    <%= __('agents.detail_modal.admin_memo') %>
+                                  </label>
+                                  <input type="text" class="input w-full border mt-1 flex-1"
+                                    id="detail-agent-admin-memo" readonly="" />
+                                </div>
+                                <% } %>
+                                  <div class="col-span-6">
+                                    <label>
+                                      <%= __('agents.detail_modal.agent_type') %>
+                                    </label>
+                                    <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-type"
+                                      readonly="" />
+                                  </div>
+                                  <div class="col-span-6" id="detail-agent-api-wrapper" style="display: none">
+                                    <label>
+                                      <%= __('agents.detail_modal.api_type') %>
+                                    </label>
+                                    <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-api"
+                                      readonly="" />
+                                  </div>
+                            </form>
+                            <div class="px-5 py-3 text-right border-t border-gray-200 dark:border-dark-5">
+                              <button type="button" data-dismiss="modal"
+                                class="button w-20 border text-gray-700 dark:border-dark-5 text-theme-1 mr-1">
+                                <%= __('agents.detail_modal.close') %>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- exchange modal -->
+                        <div class="modal" id="exchange-modal">
+                          <div class="modal__content">
+                            <div
+                              class="flex items-center px-5 py-5 sm:py-3 border-b border-gray-200 dark:border-dark-5">
+                              <h2 class="font-medium text-base mr-auto">
+                                <%= __('agents.exchange_modal.title') %>
+                              </h2>
+                            </div>
+                            <form id="exchange-form" class="p-5 grid grid-cols-12 gap-4 row-gap-3">
+                              <input type="text" id="exchange-agent-id" style="display: none" />
+
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.exchange_modal.money') %>
+                                </label>
+                                <input type="number" class="input w-full border mt-1 flex-1" id="exchange-money" min="0"
+                                  value="0" />
+                              </div>
+                              <div class="col-span-6">
+                                <label>
+                                  <%= __('agents.exchange_modal.type') %>
+                                </label>
+                                <select class="input w-full border mt-1 flex-1" id="exchange-type">
+                                  <option value="1">
+                                    <%= __('agents.exchange_modal.type.money_deposit') %>
+                                  </option>
+                                  <option value="0">
+                                    <%= __('agents.exchange_modal.type.money_withdraw') %>
+                                  </option>
+                                </select>
+                              </div>
+
+                              <% if (session.auth.lang=="ko" ){ %>
+                                <div class="col-span-2">
+                                  <button type="button"
+                                    class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10"
+                                    onclick="handleExchangeMoney(50000000)">
+                                    <%= __('agents.exchange_modal.fifty_millions') %>
+                                  </button>
+                                </div>
+                                <div class="col-span-2">
+                                  <button type="button"
+                                    class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10"
+                                    onclick="handleExchangeMoney(100000000)">
+                                    <%= __('agents.exchange_modal.one_hundred_millions') %>
+                                  </button>
+                                </div>
+                                <div class="col-span-2">
+                                  <button type="button"
+                                    class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10"
+                                    onclick="handleExchangeMoney(200000000)">
+                                    <%= __('agents.exchange_modal.two_hundreds_millions') %>
+                                  </button>
+                                </div>
+                                <div class="col-span-2">
+                                  <button type="button"
+                                    class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10"
+                                    onclick="handleExchangeMoney(500000000)">
+                                    <%= __('agents.exchange_modal.five_hundreds_millions') %>
+                                  </button>
+                                </div>
+                                <div class="col-span-2">
+                                  <button type="button"
+                                    class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10"
+                                    onclick="handleExchangeMoney(1000000000)">
+                                    <%= __('agents.exchange_modal.one_thousand_millions') %>
+                                  </button>
+                                </div>
+                                <div class="col-span-2">
+                                  <button type="button"
+                                    class="button button--sm w-full mt-2 inline-block border border-theme-6 text-theme-6 dark:border-theme-6"
+                                    onclick="handleExchangeMoney(0)">
+                                    <%= __('agents.exchange_modal.clear') %>
+                                  </button>
+                                </div>
+                                <% } %>
+                            </form>
+                            <div class="px-5 py-3 text-right border-t border-gray-200 dark:border-dark-5">
+                              <button type="button" data-dismiss="modal"
+                                class="button w-20 border text-gray-700 dark:border-dark-5 text-theme-1 mr-1">
+                                <%= __('agents.exchange_modal.cancel') %>
+                              </button>
+                              <button type="button" class="button w-20 bg-theme-1 text-white" id="exchange-confirm">
+                                <%= __('agents.exchange_modal.confirm') %>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <!-- new agent modal -->
-              <div class="modal" id="new-agent-modal">
-                <div class="modal__content modal__content--xl">
-                  <div class="flex items-center px-5 py-5 sm:py-3 border-b border-gray-200 dark:border-dark-5">
-                    <h2 class="font-medium text-base mr-auto">
-                      <%= __('agents.new_modal.title') %>
-                    </h2>
-                  </div>
-                  <form id="new-agent-form" class="p-5 grid grid-cols-12 gap-4 row-gap-3">
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.parent_agent') %>
-                      </label>
-                      <select class="input w-full border mt-1 flex-1" id="new-agent-parent-id"></select>
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.agent_name') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="new-agent-name" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.agent_code') %>
-                      </label>
-                      <div class="relative mt-1">
-                        <input type="text" class="input pr-12 w-full border col-span-4" id="new-agent-code" placeholder="<%= __('agents.new_modal.agent_code.placeholder') %>" />
-                        <button type="button" id="new-agent-check-code" class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2" style="outline: none !important">
-                          <%= __('agents.new_modal.confirm_duplication') %>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.password') %>
-                      </label>
-                      <div class="relative mt-1">
-                        <input type="text" class="input pr-12 w-full border col-span-4" id="new-agent-password" placeholder="Password" />
-                        <button type="button" id="new-agent-password-copy" class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-10 text-white px-2 pr-10 copy-button" style="outline: none !important; display: none;" data-clipboard-target="#new-agent-password">
-                          <i data-feather="clipboard" class="w-4 h-4"></i>
-                        </button>
-                        <button type="button" onclick="genPass('new-agent-password')" class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-16 text-white px-2" style="outline: none !important">
-                          <i data-feather="refresh-ccw" class="w-4 h-4"></i>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.percent') %>
-                      </label>
-                      <input type="number" class="input w-full border mt-1 flex-1" min="0" max="100" step="1" id="new-agent-percent" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.ip') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" placeholder="127.0.0.1" id="new-agent-ip" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.memo') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="new-agent-memo" />
-                    </div>
-                    <% if (session.auth.role==1) { %>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.admin_memo') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="new-agent-admin-memo" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.currency') %>
-                      </label>
-                      <select class="input w-full border mt-1 flex-1" id="new-agent-currency"></select>
-                    </div>
-                    <% } %>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.new_modal.agent_type') %>
-                      </label>
-                      <select class="input w-full border mt-1 flex-1" id="new-agent-type">
-                        <option value="2">
-                          <%= __('agents.new_modal.agent_type.run') %>
-                        </option>
-                        <option value="3">
-                          <%= __('agents.new_modal.agent_type.parallel') %>
-                        </option>
-                      </select>
-                    </div>
-                    <div class="col-span-6" id="new-agent-api-wrapper">
-                      <label>
-                        <%= __('agents.new_modal.api_type') %>
-                      </label>
-                      <select class="input w-full border mt-1 flex-1" id="new-agent-api">
-                        <option value="1">
-                          <%= __('agents.new_modal.api_type.transfer') %>
-                        </option>
-                        <!-- <option value="0"><%= __('agents.new_modal.api_type.seamless') %></option> -->
-                      </select>
-                    </div>
-                    <div class="col-span-6" id="new-agent-endpoint-wrapper" style="display: none">
-                      <label>
-                        <%= __('agents.new_modal.site_endpoint') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="new-agent-endpoint" placeholder="https://example.com (Do not input '/gold_api')" />
-                    </div>
-                  </form>
-                  <div class="px-5 py-3 text-right border-t border-gray-200 dark:border-dark-5">
-                    <button type="button" data-dismiss="modal" class="button w-20 border text-gray-700 dark:border-dark-5 text-theme-1 mr-1">
-                      <%= __('agents.new_modal.cancel') %>
-                    </button>
-                    <button type="button" class="button w-20 bg-theme-1 text-white" id="new-agent-confirm">
-                      <%= __('agents.new_modal.create') %>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- update agent modal -->
-              <div class="modal" id="update-agent-modal">
-                <div class="modal__content modal__content--xl">
-                  <div class="flex items-center px-5 py-5 sm:py-3 border-b border-gray-200 dark:border-dark-5">
-                    <h2 class="font-medium text-base mr-auto">
-                      <%= __('agents.update_modal.title') %>
-                    </h2>
-                  </div>
-                  <form id="update-agent-form" class="p-5 grid grid-cols-12 gap-4 row-gap-3">
-                    <input type="text" id="update-agent-id" style="display: none" />
-
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.parent_agent') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-parent-id" readonly="" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.agent_name') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-name" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.agent_code') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-code" readonly="" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.password') %>
-                      </label>
-                      <div class="relative mt-1">
-                        <input type="text" class="input pr-12 w-full border col-span-4" id="update-agent-password" placeholder="Password" />
-                        <button type="button" id="update-agent-password-copy" class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-10 text-white px-2 pr-10 copy-button" style="outline: none !important; display: none;" data-clipboard-target="#update-agent-password">
-                          <i data-feather="clipboard" class="w-4 h-4"></i>
-                        </button>
-                        <button type="button" onclick="genPass('update-agent-password')" class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-16 text-white px-2" style="outline: none !important">
-                          <i data-feather="refresh-ccw" class="w-4 h-4"></i>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.agent_secret_key') %>
-                      </label>
-                      <div class="relative mt-1">
-                        <input type="text" class="input pr-12 w-full border col-span-4" id="update-agent-secret-key" readonly="" />
-                        <button type="button" id="copy-agent-secret-key" class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2 copy-button" style="outline: none !important" data-clipboard-target="#update-agent-secret-key">
-                          <%= __('agents.update_modal.copy') %>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.percent') %>
-                      </label>
-                      <input type="number" class="input w-full border mt-1 flex-1" min="0" max="100" step="1" id="update-agent-percent" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.ip') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-ip" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.memo') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-memo" />
-                    </div>
-                    <% if (session.auth.role==1) { %>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.admin_memo') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="update-agent-admin-memo" />
-                    </div>
-                    <% } %>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.update_modal.agent_type') %>
-                      </label>
-                      <select class="input w-full border mt-1 flex-1" id="update-agent-type">
-                        <option value="2">
-                          <%= __('agents.new_modal.agent_type.run') %>
-                        </option>
-                        <option value="3">
-                          <%= __('agents.new_modal.agent_type.parallel') %>
-                        </option>
-                      </select>
-                    </div>
-                    <div class="col-span-6" id="update-agent-api-wrapper" style="display: none">
-                      <label>
-                        <%= __('agents.update_modal.api_type') %>
-                      </label>
-                      <select class="input w-full border mt-1 flex-1" id="update-agent-api">
-                        <option value="1">
-                          <%= __('agents.new_modal.api_type.transfer') %>
-                        </option>
-                        <!-- <option value="0"><%= __('agents.new_modal.api_type.seamless') %></option> -->
-                      </select>
-                    </div>
-                  </form>
-                  <div class="px-5 py-3 text-right border-t border-gray-200 dark:border-dark-5">
-                    <button type="button" data-dismiss="modal" class="button w-20 border text-gray-700 dark:border-dark-5 text-theme-1 mr-1">
-                      <%= __('agents.update_modal.cancel') %>
-                    </button>
-                    <button type="button" class="button w-20 bg-theme-1 text-white" id="update-agent-confirm">
-                      <%= __('agents.update_modal.confirm') %>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- detail agent modal -->
-              <div class="modal" id="detail-agent-modal">
-                <div class="modal__content modal__content--xl">
-                  <div class="flex items-center px-5 py-5 sm:py-3 border-b border-gray-200 dark:border-dark-5">
-                    <h2 class="font-medium text-base mr-auto">
-                      <%= __('agents.detail_modal.title') %>
-                    </h2>
-                  </div>
-                  <form id="detail-agent-form" class="p-5 grid grid-cols-12 gap-4 row-gap-3">
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.detail_modal.parent_agent') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-parent-id" readonly="" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.detail_modal.agent_name') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-name" readonly="" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.detail_modal.agent_code') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-code" readonly="" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.detail_modal.agent_secret_key') %>
-                      </label>
-                      <div class="relative mt-1">
-                        <input type="text" class="input pr-12 w-full border col-span-4" id="detail-agent-secret-key" readonly="" />
-                        <button type="button" id="copy-agent-secret-key" class="absolute top-0 right-0 rounded-r h-full flex items-center justify-center bg-theme-1 text-white px-2 copy-button" style="outline: none !important" data-clipboard-target="#detail-agent-secret-key">
-                          <%= __('agents.detail_modal.copy') %>
-                        </button>
-                      </div>
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.detail_modal.percent') %>
-                      </label>
-                      <input type="number" class="input w-full border mt-1 flex-1" readonly="" id="detail-agent-percent" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.detail_modal.ip') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-ip" readonly="" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.detail_modal.memo') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-memo" readonly="" />
-                    </div>
-                    <% if (session.auth.role==1) { %>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.detail_modal.admin_memo') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-admin-memo" readonly="" />
-                    </div>
-                    <% } %>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.detail_modal.agent_type') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-type" readonly="" />
-                    </div>
-                    <div class="col-span-6" id="detail-agent-api-wrapper" style="display: none">
-                      <label>
-                        <%= __('agents.detail_modal.api_type') %>
-                      </label>
-                      <input type="text" class="input w-full border mt-1 flex-1" id="detail-agent-api" readonly="" />
-                    </div>
-                  </form>
-                  <div class="px-5 py-3 text-right border-t border-gray-200 dark:border-dark-5">
-                    <button type="button" data-dismiss="modal" class="button w-20 border text-gray-700 dark:border-dark-5 text-theme-1 mr-1">
-                      <%= __('agents.detail_modal.close') %>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- exchange modal -->
-              <div class="modal" id="exchange-modal">
-                <div class="modal__content">
-                  <div class="flex items-center px-5 py-5 sm:py-3 border-b border-gray-200 dark:border-dark-5">
-                    <h2 class="font-medium text-base mr-auto">
-                      <%= __('agents.exchange_modal.title') %>
-                    </h2>
-                  </div>
-                  <form id="exchange-form" class="p-5 grid grid-cols-12 gap-4 row-gap-3">
-                    <input type="text" id="exchange-agent-id" style="display: none" />
-
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.exchange_modal.money') %>
-                      </label>
-                      <input type="number" class="input w-full border mt-1 flex-1" id="exchange-money" min="0" value="0" />
-                    </div>
-                    <div class="col-span-6">
-                      <label>
-                        <%= __('agents.exchange_modal.type') %>
-                      </label>
-                      <select class="input w-full border mt-1 flex-1" id="exchange-type">
-                        <option value="1">
-                          <%= __('agents.exchange_modal.type.money_deposit') %>
-                        </option>
-                        <option value="0">
-                          <%= __('agents.exchange_modal.type.money_withdraw') %>
-                        </option>
-                      </select>
-                    </div>
-
-                    <% if (session.auth.lang=="ko" ){ %>
-                    <div class="col-span-2">
-                      <button type="button" class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10" onclick="handleExchangeMoney(50000000)">
-                        <%= __('agents.exchange_modal.fifty_millions') %>
-                      </button>
-                    </div>
-                    <div class="col-span-2">
-                      <button type="button" class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10" onclick="handleExchangeMoney(100000000)">
-                        <%= __('agents.exchange_modal.one_hundred_millions') %>
-                      </button>
-                    </div>
-                    <div class="col-span-2">
-                      <button type="button" class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10" onclick="handleExchangeMoney(200000000)">
-                        <%= __('agents.exchange_modal.two_hundreds_millions') %>
-                      </button>
-                    </div>
-                    <div class="col-span-2">
-                      <button type="button" class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10" onclick="handleExchangeMoney(500000000)">
-                        <%= __('agents.exchange_modal.five_hundreds_millions') %>
-                      </button>
-                    </div>
-                    <div class="col-span-2">
-                      <button type="button" class="button button--sm w-full mt-2 inline-block border border-theme-1 text-theme-1 dark:border-theme-10 dark:text-theme-10" onclick="handleExchangeMoney(1000000000)">
-                        <%= __('agents.exchange_modal.one_thousand_millions') %>
-                      </button>
-                    </div>
-                    <div class="col-span-2">
-                      <button type="button" class="button button--sm w-full mt-2 inline-block border border-theme-6 text-theme-6 dark:border-theme-6" onclick="handleExchangeMoney(0)">
-                        <%= __('agents.exchange_modal.clear') %>
-                      </button>
-                    </div>
-                    <% } %>
-                  </form>
-                  <div class="px-5 py-3 text-right border-t border-gray-200 dark:border-dark-5">
-                    <button type="button" data-dismiss="modal" class="button w-20 border text-gray-700 dark:border-dark-5 text-theme-1 mr-1">
-                      <%= __('agents.exchange_modal.cancel') %>
-                    </button>
-                    <button type="button" class="button w-20 bg-theme-1 text-white" id="exchange-confirm">
-                      <%= __('agents.exchange_modal.confirm') %>
-                    </button>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- footer -->
-  <%- include('../shared/footer.ejs') -%>
+        <!-- footer -->
+        <%- include('../shared/footer.ejs') -%>
 
-  <!-- global -->
-  <%- include('../shared/global.ejs') -%>
-  <script src="<%= baseUrl %>/js/agent.js"></script>
-</body>
+          <!-- global -->
+          <%- include('../shared/global.ejs') -%>
+            <script>
+              $("#menu-2").addClass("side-menu--active");
+              $("#menu-2 + ul").addClass("side-menu__sub-open");
+
+              const sessionAgentId = `<%= session.auth.id %>`;
+              const sessionAgentuuId = `<%= session.auth.uuid %>`;
+              const sessionAgentRole = `<%= session.auth.role %>`;
+              const sessionAgentCurrency = `<%= session.auth.currency %>`;
+
+              const agentTypeString = {
+                1: {
+                  title: "<%= __('agents.distribution') %>",
+                  color: "text-theme-6",
+                  desc: "<%= __('agents.distribution.description') %>"
+                },
+                2: {
+                  title: "<%= __('agents.run') %>",
+                  color: "text-theme-1",
+                  desc: "<%= __('agents.run.description') %>"
+                },
+                3: {
+                  title: "<%= __('agents.parallel') %>",
+                  color: "text-theme-9",
+                  desc: "<%= __('agents.parallel.description') %>"
+                },
+              };
+
+              const apiTypeString = {
+                0: {
+                  title: "S",
+                  color: "text-theme-6",
+                  desc: "<%= __('agents.seamless_mode') %>"
+                },
+                1: {
+                  title: "T",
+                  color: "text-theme-9",
+                  desc: "<%= __('agents.transfer_mode') %>"
+                },
+              };
+
+              let currencyInfo = [];
+              let curMulti = 1;
+
+              let tbodyHtml = "";
+              let isChecked = false;
+              let count = 0;
+
+              const clipboard = new ClipboardJS(".copy-button");
+
+              clipboard.on("success", function (e) {
+                showToast("success", e.text);
+                e.clearSelection();
+              });
+
+              clipboard.on("error", function (e) {
+                showToast("error", e.text);
+              });
+
+              function init() {
+                $.ajax({
+                  type: "POST",
+                  url: "/api/currency",
+                  success: function (res) {
+                    if (res.status) {
+                      currencyInfo = res.currencies;
+                      const currencies = det(res.currencies);
+                      let currencyOptionHtml = "";
+                      for (const currency of currencies) {
+                        if (currency.code == 'IDR') {
+                          currencyOptionHtml += `<option value="${currency.code}" selected>${currency.code}</option>`;
+                        } else {
+                          currencyOptionHtml += `<option value="${currency.code}" disabled>${currency.code}</option>`;
+                        }
+                      }
+                      if (sessionAgentRole == 1) {
+                        $("#new-agent-currency").html(currencyOptionHtml);
+                      }
+                    }
+                  },
+                });
+              }
+
+              function drawTable() {
+                $('#card-loading').show();
+                tbodyHtml = "";
+                count = 0;
+
+                $.ajax({
+                  type: "POST",
+                  url: `/api/agent/tree?search=${$("#agent-search").val()}`,
+                  success: function (res) {
+                    if (res.status) {
+                      sortAgents(det(res.data), 0);
+                      $("#agent-count").html(`(${count})`);
+                      $("#agent-table-content").html(tbodyHtml);
+                      $("#agent-treetable").treetable("destroy");
+                      $("#agent-treetable").treetable({
+                        expandable: true
+                      });
+                      $("#agent-treetable").treetable("expandAll");
+                      $('#card-loading').fadeOut();
+                    }
+                  },
+                });
+              }
+
+              let chargeSVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="feather feather-dollar-sign mx-auto inline-block mr-1">
+                <path d="M12 2.96997C10.0222 2.96997 8.08881 3.55646 6.44432 4.65527C4.79983 5.75409 3.51809 7.31581 2.76121 9.14307C2.00434 10.9703 1.8063 12.9811 2.19215 14.9209C2.578 16.8607 3.53041 18.6425 4.92894 20.041C6.32746 21.4395 8.10931 22.392 10.0491 22.7778C11.9889 23.1637 13.9996 22.9656 15.8269 22.2087C17.6541 21.4519 19.2159 20.1701 20.3147 18.5256C21.4135 16.8811 22 14.9478 22 12.97" stroke="#436ff3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12.7003 17.1099V18.21C12.7003 18.3877 12.6296 18.5582 12.504 18.6838C12.3783 18.8095 12.2079 18.8799 12.0302 18.8799C11.8525 18.8799 11.6821 18.8095 11.5565 18.6838C11.4308 18.5582 11.3602 18.3877 11.3602 18.21V17.0801C10.9165 17.0072 10.4917 16.8468 10.1106 16.6082C9.72943 16.3695 9.39958 16.0573 9.14023 15.6899C9.04577 15.57 8.99311 15.4226 8.99023 15.27C8.99014 15.1834 9.00763 15.0975 9.04166 15.0178C9.07568 14.9382 9.12553 14.8662 9.18817 14.8064C9.25082 14.7466 9.32495 14.7 9.4061 14.6697C9.48724 14.6393 9.57371 14.6258 9.66025 14.6299C9.74612 14.6294 9.83102 14.648 9.90884 14.6843C9.98667 14.7206 10.0554 14.774 10.1102 14.8401C10.4301 15.258 10.8643 15.574 11.3602 15.75V13.21C10.0302 12.69 9.36023 11.9099 9.36023 10.8999C9.38027 10.3592 9.5928 9.84343 9.9595 9.44556C10.3262 9.04769 10.8229 8.79397 11.3602 8.72998V7.62988C11.3602 7.45219 11.4308 7.2819 11.5565 7.15625C11.6821 7.0306 11.8525 6.95996 12.0302 6.95996C12.2079 6.95996 12.3783 7.0306 12.504 7.15625C12.6296 7.2819 12.7003 7.45219 12.7003 7.62988V8.71997C13.0724 8.77828 13.4289 8.91103 13.7485 9.11035C14.0681 9.30967 14.3442 9.57137 14.5602 9.87988C14.6555 9.99235 14.7117 10.1329 14.7202 10.28C14.7229 10.3657 14.7084 10.451 14.6774 10.531C14.6464 10.611 14.5997 10.684 14.54 10.7456C14.4803 10.8072 14.4088 10.856 14.3299 10.8894C14.2509 10.9228 14.166 10.94 14.0802 10.9399C13.9906 10.9394 13.9022 10.9196 13.8211 10.8816C13.74 10.8436 13.668 10.7884 13.6102 10.72C13.3718 10.4221 13.0575 10.1942 12.7003 10.0601V12.3101L12.9503 12.4099C14.2203 12.9099 15.0103 13.63 15.0103 14.77C14.9954 15.3808 14.7481 15.9629 14.3189 16.3977C13.8897 16.8325 13.3108 17.0871 12.7003 17.1099ZM11.3602 11.73V10.0999C11.1988 10.1584 11.0599 10.2662 10.963 10.408C10.8662 10.5497 10.8162 10.7183 10.8203 10.8899C10.8186 11.0673 10.8688 11.2414 10.9647 11.3906C11.0607 11.5399 11.1981 11.6579 11.3602 11.73ZM13.5502 14.8C13.5502 14.32 13.2203 14.03 12.7003 13.8V15.8C12.9387 15.7639 13.1561 15.6427 13.3123 15.459C13.4685 15.2752 13.553 15.0412 13.5502 14.8Z" fill="#436ff3"/>
+                <path d="M21.9998 2.91992L16.3398 8.57992" stroke="#436ff3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20.8698 8.5798H16.3398V4.0498" stroke="#436ff3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>`;
+              let addUserSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-plus mx-auto inline-block mr-1"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>`;
+              let goUsersSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users mx-auto inline-block mr-1"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
+
+
+              function sortAgents(agents, parentId) {
+                for (let i = 0; i < agents.length; i++) {
+                  const agent = agents[i];
+
+                  tbodyHtml += `<tr data-tt-id="node_${agent.uuid}" data-tt-parent-id="node_${parentId}">`;
+                  tbodyHtml += `<td class="text-left agent-level-${agent.agentType}">[${agent.status}] ${agent.agentCode}</td>`;
+                  tbodyHtml += `<td class="text-theme-5" id="agent-${agent.uuid}-name">${agent.agentName}`;
+                  if (sessionAgentRole != 1 && agent.memo !== "") tbodyHtml += `<br><span class="memo" id="agent-${agent.uuid}-memo">[memo] ${agent.memo}</span>`;
+                  if (sessionAgentRole == 1 && agent.adminMemo != "") tbodyHtml += `<br><span class="memo" id="agent-${agent.uuid}-admemo">[admemo] ${agent.adminMemo}`;
+                  tbodyHtml += `</td>`;
+                  tbodyHtml += `<td class="${agentTypeString[agent.agentType].color}">${agentTypeString[agent.agentType].title}</td>`;
+                  if (agent.agentType == 1) {
+                    tbodyHtml += `<td></td>`;
+                  } else {
+                    tbodyHtml += `<td class="${apiTypeString[agent.apiType].color}">${apiTypeString[agent.apiType].title}</td>`;
+                  }
+
+                  tbodyHtml += `<td class="balance-currency-color">${agent.currency}</td>`;
+                  tbodyHtml += `<td class="text-theme-5">${agent.currency} ${convertNumber(agent.balance, "en")}</td>`;
+                  tbodyHtml += `<td class="text-theme-5">${agent.percent} %</td>`;
+                  tbodyHtml += `<td class="text-theme-5">${convertDate(agent.createdAt)}</td>`;
+                  tbodyHtml += `<td><input type="checkbox" id="btn-change" class="input input--sm input--switch border" ${agent.status == 1 ? `checked="checked"` : ``} onclick="handleChangeStatus('${agent.uuid}', ${agent.status})"></td>`;
+                  tbodyHtml += `<td>
+            <div class="dropdown">
+            <div class="dropdown-toggle">
+            <button class="button inline-block border border-theme-1 text-theme-2 dark:border-theme-10 dark:text-theme-10 agents-action theme3-btn1" >
+                Action
+            </button>
+            </div>
+            <div class="dropdown-box">
+            <div class="dropdown-box__content box p-2"  >`;
+                  tbodyHtml += `<table>`;
+
+                  if (agent.agentType !== 2)
+                    tbodyHtml += `<tr onclick="handleCreateChildAgent('${agent.uuid}', ${agent.agentType},'${agent.currency}')" class="admin-show block cursor-pointer p-1 hover:bg-gray-200"><td class="w-8"><div class="inline-block float-left text-theme-6">${addUserSVG}</div></td><td><div class="inline-block">Create Sub Agent</div></td></tr>`;
+                  if (agent.parentId === Number(sessionAgentId) || sessionAgentRole == 1) {
+                    tbodyHtml += `<tr onclick="handleExchange('${agent.uuid}', ${agent.balance})" class="block cursor-pointer p-1 hover:bg-gray-200"><td class="w-8"><div class="inline-block float-left text-theme-6">${chargeSVG}</div></td><td><div class="inline-block">Exchange</div></td></tr>`;
+                    tbodyHtml += `<tr onclick="handleUpdateAgent('${agent.uuid}')" class="block cursor-pointer p-1 hover:bg-gray-200"><td class="w-8"><div class="inline-block float-left text-theme-9"><svg  xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit mx-auto inline-block mr-1"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></div></td><td><div class="inline-block">Update</div></td></tr>`;
+                    if (agent.parentId === Number(sessionAgentId) || sessionAgentRole == 1) {
+                      tbodyHtml += `<tr onclick="handleDeleteAgent('${agent.uuid}')" class="block cursor-pointer p-1 hover:bg-gray-200"><td class="w-8"><div class="inline-block float-left text-theme-6"><svg  xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 mx-auto inline-block"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></div></td><td><div class="inline-block">Delete</div></td></tr>`;
+                    }
+                  }
+                  tbodyHtml += `</table>`;
+                  tbodyHtml += `</div></div></div></td>`;
+                  tbodyHtml += `</td>`;
+                  tbodyHtml += `</tr>`;
+
+                  count++;
+
+                  if (agent.children && agent.children.length > 0) {
+                    sortAgents(agent.children, agent.uuid);
+                  }
+                }
+              }
+
+              function expandTreeTable() {
+                $("#agent-treetable").treetable("expandAll");
+              }
+
+              function collapseTreeTable() {
+                $("#agent-treetable").treetable("collapseAll");
+              }
+
+              function validateCode(data) {
+                if (data.agentCode.length < 5) {
+                  showToast("warning", "Agent code must be at least 5 characters long.");
+                  $("#new-agent-code").focus();
+                  return false;
+                }
+
+                return true;
+              }
+
+              function validateCreate(data) {
+                if (data.parentId == "") {
+                  showToast("warning", "<%= __('agents.message.please_select_parent_agent') %>");
+                  $("#new-agent-parent-id").focus();
+                  return false;
+                }
+
+                if (data.agentName.length < 5) {
+                  showToast("warning", "Agent name must be at least 5 characters long.");
+                  $("#new-agent-name").focus();
+                  return false;
+                }
+
+                if (data.agentCode.length < 5) {
+                  showToast("warning", "Agent code must be at least 5 characters long.");
+                  $("#new-agent-code").focus();
+                  return false;
+                }
+
+                if (data.password.length < 5) {
+                  showToast("warning", "Password must be at least 5 characters long.");
+                  $("#new-agent-password").focus();
+                  return false;
+                }
+
+                if (data.percent == "" || data.percent < 0 || data.percent > 100) {
+                  showToast("warning", "<%= __('agents.message.please_check_up_percent') %>");
+                  $("#new-agent-percent").focus();
+                  return false;
+                }
+
+                if (data.agentType == "") {
+                  showToast("warning", "<%= __('agents.message.please_check_up_agent_type') %>");
+                  $("#new-agent-type").focus();
+                  return false;
+                }
+
+                if (!isChecked) {
+                  showToast("warning", "<%= __('agents.message.please_check_up_id_duplication') %>");
+                  $("#new-agent-code").focus();
+                  return false;
+                }
+
+                if ((data.agentType == 2 || data.agentType == 3) && data.apiType == "") {
+                  showToast("warning", "<%= __('agents.message.please_check_up_api_type') %>");
+                  $("#new-agent-api").focus();
+                  return false;
+                }
+
+                if (data.apiType == 0 && (data.siteEndPoint == "" || data.siteEndPoint.endsWith("/gold_api"))) {
+                  showToast("warning", "<%= __('agents.message.please_check_up_site_endpoint') %>");
+                  $("#new-agent-endpoint").focus();
+                  return false;
+                }
+
+                return true;
+              }
+
+              function validateUpdate(data) {
+                if (data.percent == "" || data.percent < 0 || data.percent > 100) {
+                  showToast("warning", "<%= __('agents.message.please_check_up_agent_percent') %>");
+                  $("#update-agent-percent").focus();
+                  return false;
+                }
+
+                return true;
+              }
+
+              function validateExchange(data) {
+                if (data.amount == "" || data.amount <= 0) {
+                  showToast("warning", "<%= __('agents.message.please_check_up_money_value') %>");
+                  $("#exchange-money").focus();
+                  return false;
+                }
+
+                if (data.chargeType == "") {
+                  showToast("warning", "<%= __('agents.message.please_check_up_exchange_type') %>");
+                  $("#exchange-type").focus();
+                  return false;
+                }
+
+                return true;
+              }
+
+              function handleChangeStatus(id, status) {
+                const requestData = {
+                  status: status == 0 ? 1 : 0,
+                };
+
+                $("#btn-change").attr("disabled", true);
+
+                $.ajax({
+                  type: "PUT",
+                  url: `/api/agent/${id}`,
+                  data: requestData,
+                  success: function (res) {
+                    if (res.status) {
+                      showToast("success", "<%= __('common.operated_successfully') %>");
+                      drawTable();
+                    }
+                    $("#btn-change").removeAttr("disabled");
+                  },
+                  error: function () {
+                    $("#btn-change").removeAttr("disabled");
+                  },
+                });
+              }
+
+              function handleDeleteAgent(id) {
+                showConfirmAlert("<%= __('agents.message.do_you_delete_this_agent') %>", function () {
+                  $.ajax({
+                    type: "DELETE",
+                    url: `/api/agent/${id}`,
+                    success: function (res) {
+                      if (res.status) {
+                        showToast("success", "<%= __('common.operated_successfully') %>");
+                        drawTable();
+                      }
+                    },
+                  });
+                });
+              }
+
+              function handleUpdateAgent(id) {
+                $.ajax({
+                  type: "POST",
+                  url: `/api/agent/${id}/details`,
+                  success: function (res) {
+                    if (res.status) {
+                      const agent = det(res.agent);
+
+                      resetForm("update-agent-form");
+
+                      $("#update-agent-id").val(agent.uuid);
+                      $("#update-agent-parent-id").val(agent.parent ? agent.parent.agentCode : "");
+                      $("#update-agent-name").val(agent.agentName);
+                      $("#update-agent-code").val(agent.agentCode);
+                      $("#update-agent-secret-key").val(agent.secretkey);
+                      $("#update-agent-password").val();
+                      $("#update-agent-percent").val(agent.percent);
+                      $("#update-agent-ip").val(agent.ipAddress);
+                      $("#update-agent-memo").val(agent.memo);
+                      $("#update-agent-admin-memo").val(agent.adminMemo);
+                      $("#update-agent-type").val(agent.agentType);
+                      $("#update-agent-api").val(agent.apiType);
+
+                      if (agent.agentType == 1) {
+                        $("#update-agent-api-wrapper").hide();
+                      } else {
+                        $("#update-agent-api-wrapper").show();
+
+                        if (agent.apiType == 1) {
+                          $("#update-agent-endpoint-wrapper").hide();
+                        } else {
+                          $("#update-agent-endpoint-wrapper").show();
+                        }
+                      }
+
+                      cash("#update-agent-modal").modal("show");
+                    }
+                  },
+                });
+              }
+
+              function handleDetailAgent(id) {
+                $.ajax({
+                  type: "POST",
+                  url: `/api/agent/${id}/details`,
+                  success: function (res) {
+                    if (res.status) {
+                      const agent = det(res.agent);
+
+                      resetForm("detail-agent-form");
+
+                      $("#detail-agent-parent-id").val(agent.parent ? agent.parent.agentCode : "");
+                      $("#detail-agent-name").val(agent.agentName);
+                      $("#detail-agent-code").val(agent.agentCode);
+                      $("#detail-agent-secret-key").val(agent.secretkey);
+                      $("#detail-agent-percent").val(agent.percent);
+                      $("#detail-agent-ip").val(agent.ipAddress);
+                      $("#detail-agent-memo").val(agent.memo);
+                      $("#detail-agent-admin-memo").val(agent.adminMemo);
+                      $("#detail-agent-type").val(`${agentTypeString[agent.agentType].title} (${agentTypeString[agent.agentType].desc})`);
+                      $("#detail-agent-api").val(`${apiTypeString[agent.apiType].title} (${apiTypeString[agent.apiType].desc})`);
+
+                      if (agent.agentType == 1) {
+                        $("#detail-agent-api-wrapper").hide();
+                        $("#detail-agent-endpoint-wrapper").hide();
+                      } else {
+                        $("#detail-agent-api-wrapper").show();
+
+                        if (agent.apiType == 1) {
+                          $("#detail-agent-endpoint-wrapper").hide();
+                        } else {
+                          $("#detail-agent-endpoint-wrapper").show();
+                        }
+                      }
+
+                      cash("#detail-agent-modal").modal("show");
+                    }
+                  },
+                });
+              }
+
+              function handleExchange(id) {
+                resetForm("exchange-form");
+                $("#exchange-agent-id").val(id);
+
+                cash("#exchange-modal").modal("show");
+              }
+
+              function handleExchangeMoney(amount) {
+                let exchangeMoney = $("#exchange-money").val();
+
+                if (amount == 0) {
+                  exchangeMoney = 0;
+                } else {
+                  exchangeMoney = Number(exchangeMoney) + amount;
+                }
+
+                $("#exchange-money").val(exchangeMoney);
+              }
+
+              function handleCreateChildAgent(agentId, agentType, currency) {
+                resetForm("new-agent-form");
+                $("#new-agent-endpoint-wrapper").hide();
+                if (sessionAgentRole == 1) {
+                  $("#new-agent-currency").val(currency);
+                  $("#new-agent-currency").prop("disabled", true);
+                }
+
+                isChecked = false;
+
+                if (agentType == 1 || agentType == 3) {
+                  $("#btn-create-child-agent").attr("disabled", true);
+
+                  $.ajax({
+                    type: "POST",
+                    url: `/api/agent/${agentId}/child`,
+                    success: function (res) {
+                      if (res.status) {
+                        const agents = det(res.child);
+
+                        let agentOptionHtml = "";
+
+                        for (let i = 0; i < agents.length; i++) {
+                          agentOptionHtml += `<option value="${agents[i].id}">${agents[i].role} - ${agents[i].agentCode}(${agents[i].agentName})</option>`;
+                        }
+
+                        $("#new-agent-parent-id").html(agentOptionHtml);
+
+                        cash("#new-agent-modal").modal("show");
+                      }
+
+                      $("#btn-create-child-agent").removeAttr("disabled");
+                    },
+                    error: function () {
+                      $("#btn-create-child-agent").removeAttr("disabled");
+                    },
+                  });
+                } else {
+                  showToast("warning", "<%= __('agents.message.cannot_create_child_agent') %>");
+                }
+              }
+
+              $("#agent-search").change(function () {
+                drawTable();
+              });
+
+              $("#new-agent-show").click(function () {
+                resetForm("new-agent-form");
+                $("#new-agent-endpoint-wrapper").hide();
+
+                isChecked = false;
+
+                $("#new-agent-show").attr("disabled", true);
+
+                $.ajax({
+                  type: "POST",
+                  url: `/api/agent/${sessionAgentuuId}/child`,
+                  success: function (res) {
+                    if (res.status) {
+                      const agents = det(res.child);
+
+                      let agentOptionHtml = "";
+                      for (let i = 0; i < agents.length; i++) {
+                        agentOptionHtml += `<option value="${agents[i].id}">${agents[i].role} - ${agents[i].agentCode}(${agents[i].agentName})</option>`;
+                      }
+                      $("#new-agent-parent-id").html(agentOptionHtml);
+
+                      cash("#new-agent-modal").modal("show");
+                    }
+                    $("#new-agent-show").removeAttr("disabled");
+                  },
+                  error: function () {
+                    $("#new-agent-show").removeAttr("disabled");
+                  },
+                });
+              });
+
+              $("#new-agent-type").change(function () {
+                const agentType = $(this).val();
+
+                if (agentType == 1) {
+                  $("#new-agent-api-wrapper").hide();
+                  $("#new-agent-endpoint-wrapper").hide();
+                } else if (agentType == 2 || agentType == 3) {
+                  $("#new-agent-api-wrapper").show();
+                  $("#new-agent-api").trigger("change");
+                }
+              });
+
+              $("#new-agent-api").change(function () {
+                const agentApi = $(this).val();
+
+                if (agentApi == 1) {
+                  $("#new-agent-endpoint-wrapper").hide();
+                } else {
+                  $("#new-agent-endpoint-wrapper").show();
+                }
+              });
+
+              $("#new-agent-check-code").click(function () {
+                const requestData = {
+                  agentCode: $("#new-agent-code").val(),
+                };
+
+                if (!validateCode(requestData)) {
+                  return;
+                }
+
+                $("#new-agent-check-code").attr("disabled", true);
+
+                $.ajax({
+                  type: "POST",
+                  url: `/api/agent/check`,
+                  data: requestData,
+                  success: function (res) {
+                    if (res.status) {
+                      if (res.result) {
+                        isChecked = true;
+                        showToast("success", "<%= __('agents.message.this_is_usable_id') %>");
+                      } else {
+                        showToast("warning", "<%= __('agents.message.this_is_duplicated_id') %>");
+                      }
+                    }
+                    $("#new-agent-check-code").removeAttr("disabled");
+                  },
+                  error: function () {
+                    $("#new-agent-check-code").removeAttr("disabled");
+                  },
+                });
+              });
+
+              $("#new-agent-confirm").click(function () {
+                const requestData = {
+                  parentId: $("#new-agent-parent-id").val(),
+                  agentName: $("#new-agent-name").val(),
+                  agentCode: $("#new-agent-code").val(),
+                  password: $("#new-agent-password").val(),
+                  percent: $("#new-agent-percent").val(),
+                  ipAddress: $("#new-agent-ip").val(),
+                  memo: $("#new-agent-memo").val(),
+                  adminMemo: $("#new-agent-admin-memo").val(),
+                  agentType: $("#new-agent-type").val(),
+                };
+
+                if (sessionAgentRole == 1) {
+                  requestData.currency = $("#new-agent-currency").val();
+                }
+
+                if (requestData.agentType == 2 || requestData.agentType == 3) {
+                  requestData.apiType = $("#new-agent-api").val();
+                }
+
+                if (!validateCreate(requestData)) {
+                  return;
+                }
+
+                $("#new-agent-confirm").attr("disabled", true);
+
+                $.ajax({
+                  type: "POST",
+                  url: `/api/agent/create`,
+                  data: {
+                    data: dot(requestData),
+                  },
+                  success: function (res) {
+                    if (res.status) {
+                      showToast("success", "<%= __('common.operated_successfully') %>");
+                      drawTable();
+                      cash("#new-agent-modal").modal("hide");
+                    }
+                    $("#new-agent-confirm").removeAttr("disabled");
+                  },
+                  error: function () {
+                    $("#new-agent-confirm").removeAttr("disabled");
+                  },
+                });
+              });
+
+              $("#update-agent-confirm").click(function () {
+                const requestData = {
+                  agentName: $("#update-agent-name").val(),
+                  agentType: $("#update-agent-type").val(),
+                  apiType: $("#update-agent-api").val(),
+                  password: $("#update-agent-password").val(),
+                  percent: $("#update-agent-percent").val(),
+                  ipAddress: $("#update-agent-ip").val(),
+                  memo: $("#update-agent-memo").val(),
+                  adminMemo: $("#update-agent-admin-memo").val(),
+                };
+
+                if (!validateUpdate(requestData)) {
+                  return;
+                }
+
+                $("#update-agent-confirm").attr("disabled", true);
+
+                $.ajax({
+                  type: "PUT",
+                  url: `/api/agent/${$("#update-agent-id").val()}`,
+                  data: requestData,
+                  success: function (res) {
+                    if (res.status) {
+                      showToast("success", "<%= __('common.operated_successfully') %>");
+                      drawTable();
+                      cash("#update-agent-modal").modal("hide");
+                    }
+                    $("#update-agent-confirm").removeAttr("disabled");
+                  },
+                  error: function () {
+                    $("#update-agent-confirm").removeAttr("disabled");
+                  },
+                });
+              });
+
+              $("#exchange-confirm").click(function () {
+                const requestData = {
+                  agentId: $("#exchange-agent-id").val(),
+                  chargeType: $("#exchange-type").val(),
+                  amount: $("#exchange-money").val(),
+                };
+
+                if (!validateExchange(requestData)) {
+                  return;
+                }
+
+                $("#exchange-confirm").attr("disabled", true);
+
+                $.ajax({
+                  type: "POST",
+                  url: `/api/agent/exchange`,
+                  data: requestData,
+                  success: function (res) {
+                    if (res.status) {
+                      showToast("success", "<%= __('common.operated_successfully') %>");
+                      getBalanceInfo();
+                      drawTable();
+
+                      cash("#exchange-modal").modal("hide");
+                    }
+                    $("#exchange-confirm").removeAttr("disabled");
+                  },
+                  error: function () {
+                    $("#exchange-confirm").removeAttr("disabled");
+                  },
+                });
+              });
+
+              $("#new-agent-parent-id").change(function () {
+                if (sessionAgentRole == 1) {
+                  const parentId = this.value;
+                  if (parentId == 1) {
+                    $("#new-agent-currency").prop("disabled", false);
+                  } else {
+                    $.ajax({
+                      type: "GET",
+                      url: `/api/agent/${parentId}`,
+                      success: function (res) {
+                        if (res.status) {
+                          const agent = res.agent;
+                          $("#new-agent-currency").val(agent.currency);
+                        }
+                      },
+                    });
+                    $("#new-agent-currency").prop("disabled", true);
+                  }
+                }
+              });
+
+              $("#update-agent-type").change(function () {
+                const selected = $(this).val();
+
+                if (selected == 1) {
+                  $("#update-agent-api-wrapper").hide();
+                  $("#update-agent-endpoint-wrapper").hide();
+                } else {
+                  $("#update-agent-api-wrapper").show();
+                  $("#update-agent-api").trigger("change");
+                }
+              });
+
+              $("#update-agent-api").change(function () {
+                const selected = $(this).val();
+
+                if (selected == 1) {
+                  $("#update-agent-endpoint-wrapper").hide();
+                } else {
+                  $("#update-agent-endpoint-wrapper").show();
+                }
+              });
+
+              $("#new-agent-bet-edited").change(function () {
+                if (this.value == 1) {
+                  $("#new-agent-bet-range-wrapper").show();
+                } else {
+                  $("#new-agent-bet-range-wrapper").hide();
+                }
+              });
+
+              $("#update-agent-bet-edited").change(function () {
+                if (this.value == 1) {
+                  $("#update-agent-bet-range-wrapper").show();
+                } else {
+                  $("#update-agent-bet-range-wrapper").hide();
+                }
+              });
+
+              function genPass(data) {
+                function generatePassword(length = 15) {
+                  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                  let password = "";
+                  for (let i = 0; i < length; i++) {
+                    const randomIndex = Math.floor(Math.random() * chars.length);
+                    password += chars[randomIndex];
+                  }
+                  return password;
+                }
+                const password = generatePassword();
+                $("#" + data).val(password).select().focus();
+                $("#" + data + "-copy").show();
+              }
+
+              init();
+              drawTable();
+            </script>
+  </body>
 
 </html>
