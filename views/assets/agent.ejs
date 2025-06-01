@@ -130,9 +130,7 @@
         tbodyHtml += `<td class="${apiTypeString[agent.apiType].color}">${apiTypeString[agent.apiType].title}</td>`;
       }
 
-      if (sessionAgentRole == 1) {
-        tbodyHtml += `<td class="balance-currency-color">${agent.currency}</td>`;
-      }
+      tbodyHtml += `<td class="balance-currency-color">${agent.currency}</td>`;
       tbodyHtml += `<td class="text-theme-5">${agent.currency} ${convertNumber(agent.balance, "en")}</td>`;
       tbodyHtml += `<td class="text-theme-5">${agent.percent} %</td>`;
       tbodyHtml += `<td class="text-theme-5">${convertDate(agent.createdAt)}</td>`;
