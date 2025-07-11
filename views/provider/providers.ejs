@@ -49,7 +49,6 @@
                                                             <%= __('provider.check_all_status') %>
                                                         </button> -->
                                                         <button
-                                                            onclick="handleCheckAllProvider()"
                                                             class="button flex items-center justify-center bg-theme-1 text-white"
                                                         >
                                                             <i data-feather="refresh-ccw" class="w-4 h-4 mr-2"></i> <%= __('provider.check_all_status') %>
@@ -240,7 +239,6 @@
 
                                         let actionHtml = "";
                                         actionHtml += `<button class="button button--sm inline-block  border border-theme-9 text-theme-2 dark:border-theme-9 dark:text-theme-9 mr-1" onclick="handleCheckGamelist('${res.data[i].provider_code}',${res.data[i].product_id})">Game List</button>`;
-                                        actionHtml += `<button class="button button--sm inline-block  border border-theme-1 text-theme-2 dark:border-theme-1 dark:text-theme-1 mr-1" onclick="handleCheckProvider('${res.data[i].provider_code}','${res.data[i].game_type}')">Refresh</button>`;
 
                                         res.data[i].action = actionHtml;
                                         res.data[i].responseTime = `<span id="response-time-${res.data[i].provider_code}-${res.data[i].game_type}">-</span>`;
